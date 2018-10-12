@@ -1,0 +1,1 @@
+# sam-store-manager
