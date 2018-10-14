@@ -1,0 +1,31 @@
+{
+  "name": "sam-store-manager",
+  "version": "1.0.0",
+  "description": "Store Manager is a web application that helps store owners manage sales and product inventory records. This application is meant for use in a single store.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walsamlee/sam-store-manager.git"
+  },
+  "keywords": [
+    "store",
+    "inventory"
+  ],
+  "author": "Akinwale Samuel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walsamlee/sam-store-manager/issues"
+  },
+  "homepage": "https://github.com/walsamlee/sam-store-manager#readme",
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "dependencies": {
+    "jasmine-node": "^2.0.1"
+  }
+}
