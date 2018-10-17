@@ -1,4 +1,3 @@
-// const Joi = require('joi');
 const express = require('express');
 const path = require('path');
 
@@ -9,9 +8,18 @@ const app = express();
 
 app.use(express.json());
 
+
+//--------------Data structure to hold data in memory------------
+let products = [];
+let productItem = {};
+
+let sales = [];
+let saleRecord = {};
+
 // app.use('/products', products);
 // app.use('/sales', sales);
 
+//-------------------ROUTES--------------------
 // GET /products
 
 app.get('/api/v1/products', (req, res) => {
@@ -51,9 +59,10 @@ app.post('/api/v1/sales', (req, res) => {
 app.get('/', (req, res) => {
 	res.send('Homepage');
 });
+//--------------end---------------------------
 
 
-
-app.listen(1234, () => {
+//------------------SERVER----------------------------
+const server = app.listen(1234, () => {
 	console.log('Server statrted, listening on port 1234');
 });
