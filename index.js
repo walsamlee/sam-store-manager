@@ -29,7 +29,11 @@ app.get('/api/v1/products', (req, res) => {
 // GET /products/<productId>
 
 app.get('/api/v1/products/:id', (req, res) => {
-	res.send('Get product by ID');
+	productItem = products.find(item => item.id === parseInt(req.params.id));
+	if (!productItem) {
+		return res.status(404).send('Product with the given ID was not found');
+	};
+	res.send(productItem);
 });
 
 // POST /products
