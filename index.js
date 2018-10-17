@@ -39,7 +39,19 @@ app.get('/api/v1/products/:id', (req, res) => {
 // POST /products
 
 app.post('/api/v1/products', (req, res) => {
-	res.send('Post product');
+	productItem = {
+		id: products.length + Math.floor((Math.random() * 10) + 1),
+		name: req.body.name,
+		category: req.body.category,
+		description: req.body.description,
+		amount: req.body.amount,
+		minAllowed: req.body.minAllowed,
+		price: req.body.price
+	};
+
+	products.push(productItem);
+
+	res.send(productItem);
 });
 
 // GET /sales
