@@ -40,7 +40,7 @@ app.post('/api/v1/products', (req, res) => {
 
 // GET /sales
 app.get('/api/v1/sales', (req, res) => {
-	res.send('Get all sales records');
+	res.send(sales);
 })
 
 // GET /sales/<saleId>
