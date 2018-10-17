@@ -23,7 +23,7 @@ let saleRecord = {};
 // GET /products
 
 app.get('/api/v1/products', (req, res) => {
-	res.send('Get all products');
+	res.send(products);
 });
 
 // GET /products/<productId>
