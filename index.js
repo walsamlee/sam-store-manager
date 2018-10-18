@@ -56,19 +56,33 @@ app.post('/api/v1/products', (req, res) => {
 
 // GET /sales
 app.get('/api/v1/sales', (req, res) => {
-	res.send('Get all sales records');
+	res.send(sales);
 })
 
 // GET /sales/<saleId>
 
 app.get('/api/v1/sales/:id', (req, res) => {
-	res.send('Get sales by ID')
+	saleRecord = sales.find(sale => sale.id === parseInt(req.params.id));
+	if (!saleRecord) {
+		return res.status(404).send('Sales record with the given ID was not found');
+	};
+	res.send(saleRecord);
 });
 
 // POST /sales
 
 app.post('/api/v1/sales', (req, res) => {
-	res.send('Post sales');
+	const thisSale = {
+		id: sales.length + Math.floor((Math.random() * 10) + 1),
+		attendantId: req.body.attendantId,
+		attendantName: req.body.attendantName,
+		products: req.body.products,
+		date: req.body.date,
+		price: req.body.price
+	};
+
+	sales.push(thisSale);
+	res.send(thisSale);
 });
 
 
