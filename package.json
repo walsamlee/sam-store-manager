@@ -30,6 +30,8 @@
     "eslint-plugin-import": "^2.14.0"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
     "express": "^4.16.4",
     "grunt": "^1.0.3",
     "jasmine-node": "^2.0.1",

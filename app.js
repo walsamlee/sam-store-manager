@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
+const indexRouter = require('./routes/index');
 
 // const products = require('./routes/product');
 // const sales = require('./routes/sales');
@@ -16,8 +18,15 @@ let productItem = {};
 let sales = [];
 let saleRecord = {};
 
-// app.use('/products', products);
-// app.use('/sales', sales);
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/', indexRouter);
+
 
 //-------------------ROUTES--------------------
 // GET /products
@@ -85,10 +94,6 @@ app.post('/api/v1/sales', (req, res) => {
 	res.send(thisSale);
 });
 
-
-app.get('/', (req, res) => {
-	res.send('Homepage');
-});
 //--------------end---------------------------
 
 
