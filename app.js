@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
+const Joi = require('joi');
 
 // const products = require('./routes/product');
 // const sales = require('./routes/sales');
@@ -27,7 +28,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', indexRouter);
 
-
 //-------------------ROUTES--------------------
 // GET /products
 
@@ -48,8 +48,16 @@ app.get('/api/v1/products/:id', (req, res) => {
 // POST /products
 
 app.post('/api/v1/products', (req, res) => {
+	const result = validateUser(req.body)
+
+	// console.log(schema);
+
+	if (result.error) {
+		return res.status(400).send(result.error.details[0].message);
+	};
+
 	productItem = {
-		id: products.length + Math.floor((Math.random() * 10) + 1),
+		id: products.length + 1,
 		name: req.body.name,
 		category: req.body.category,
 		description: req.body.description,
@@ -60,7 +68,7 @@ app.post('/api/v1/products', (req, res) => {
 
 	products.push(productItem);
 
-	res.send(productItem);
+	res.redirect('/addproduct?data=success');
 });
 
 // GET /sales
@@ -96,8 +104,28 @@ app.post('/api/v1/sales', (req, res) => {
 
 //--------------end---------------------------
 
+//-----------------Joi data validation----------------
+function validateUser(user) {
+	const schema = {
+		name: Joi.string().required(),
+		category: Joi.string().required(),
+		description: Joi.string().required(),
+		amount: Joi.string().required(),
+		minAllowed: Joi.string().required(),
+		price: Joi.string().required()
+
+		// name: Joi.string().min(3).required(),
+		// sex: Joi.string().min(4).required(),
+		// age: Joi.number().integer().min(18).max(59).required()
+	}
+
+	return Joi.validate(user, schema);
+}
+//--------------end---------------------------
 
 //------------------SERVER----------------------------
 const server = app.listen(1234, () => {
 	console.log('Server statrted, listening on port 1234');
 });
+
+module.exports = app;
