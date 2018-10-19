@@ -12,7 +12,7 @@ describe("Server", () => {
         const data = {};
         beforeAll((done) => {
             Request.get("http://localhost:1234/", (error, response, body) => {
-                data.status = response.status;
+                data.status = response.statusCode;
                 done();
             });
         });
@@ -24,7 +24,7 @@ describe("Server", () => {
         const data = {};
         beforeAll((done) => {
             Request.get("http://localhost:1234/dashboard", (error, response, body) => {
-                data.status = response.status;
+                data.status = response.statusCode;
                 done();
             });
         });
