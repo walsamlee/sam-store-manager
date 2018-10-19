@@ -131,7 +131,7 @@ app.post('/api/v1/sales', (req, res) => {
 
 
 //------------------SERVER----------------------------
-const server = app.listen(1234, () => {
+const server = app.listen(80, () => {
 	console.log('Server statrted, listening on port 1234');
 });
 

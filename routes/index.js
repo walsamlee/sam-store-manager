@@ -1,65 +1,65 @@
+'use strict';
 
+var _express = require('express');
 
-const _express = require('express');
-
-const _express2 = _interopRequireDefault(_express);
+var _express2 = _interopRequireDefault(_express);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const router = _express2.default.Router();
+var router = _express2.default.Router();
 
 // app.use(bodyParser.urlencoded({ extended: true }));
 
 // const express = require('express');
-router.get('/', (req, res) => {
+router.get('/', function (req, res) {
   res.status(200).render('index');
 });
 
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', function (req, res) {
   res.status(200).render('dashboard');
 });
 
-router.get('/admindash', (req, res) => {
+router.get('/admindash', function (req, res) {
   res.status(200).render('admindash');
 });
 
-router.get('/addproduct', (req, res) => {
+router.get('/addproduct', function (req, res) {
   res.status(200).render('addproduct', { productadded: '', data: '' });
 });
 
-router.get('/attendantprofile', (req, res) => {
+router.get('/attendantprofile', function (req, res) {
   res.status(200).render('attendantprofile');
 });
 
-router.get('/attendants', (req, res) => {
+router.get('/attendants', function (req, res) {
   res.status(200).render('attendants');
 });
 
-router.get('/cart', (req, res) => {
+router.get('/cart', function (req, res) {
   res.status(200).render('cart');
 });
 
-router.get('/deleteproduct', (req, res) => {
+router.get('/deleteproduct', function (req, res) {
   res.status(200).render('deleteproduct');
 });
 
-router.get('/editproduct', (req, res) => {
+router.get('/editproduct', function (req, res) {
   res.status(200).render('editproduct');
 });
 
-router.get('/product', (req, res) => {
+router.get('/product', function (req, res) {
   res.status(200).render('product');
 });
 
-router.get('/salerecord', (req, res) => {
+router.get('/salerecord', function (req, res) {
   res.status(200).render('salerecord');
 });
 
-router.get('/viewsales', (req, res) => {
+router.get('/viewsales', function (req, res) {
   res.status(200).render('viewsales');
 });
 
-router.get('/test', (req, res) => {
+router.get('/test', function (req, res) {
   res.status(200).render('test');
 });
 
