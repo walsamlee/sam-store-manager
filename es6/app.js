@@ -34,7 +34,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', indexRouter);
 
-//-------------------ROUTES--------------------
+//-----------------Joi data validation----------------
+function validateUser(user) {
+	const schema = {
+		name: Joi.string().required(),
+		category: Joi.string().required(),
+		description: Joi.string().required(),
+		amount: Joi.string().required(),
+		minAllowed: Joi.string().required(),
+		price: Joi.string().required()
+
+		// name: Joi.string().min(3).required(),
+		// sex: Joi.string().min(4).required(),
+		// age: Joi.number().integer().min(18).max(59).required()
+	}
+
+	return Joi.validate(user, schema);
+}
+//--------------end---------------------------
+
+//-------------------API endpoints--------------------
 // GET /products
 
 app.get('/api/v1/products', (req, res) => {
@@ -110,24 +129,6 @@ app.post('/api/v1/sales', (req, res) => {
 
 //--------------end---------------------------
 
-//-----------------Joi data validation----------------
-function validateUser(user) {
-	const schema = {
-		name: Joi.string().required(),
-		category: Joi.string().required(),
-		description: Joi.string().required(),
-		amount: Joi.string().required(),
-		minAllowed: Joi.string().required(),
-		price: Joi.string().required()
-
-		// name: Joi.string().min(3).required(),
-		// sex: Joi.string().min(4).required(),
-		// age: Joi.number().integer().min(18).max(59).required()
-	}
-
-	return Joi.validate(user, schema);
-}
-//--------------end---------------------------
 
 //------------------SERVER----------------------------
 const server = app.listen(1234, () => {
