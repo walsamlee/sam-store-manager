@@ -134,4 +134,4 @@ const server = app.listen(1234, () => {
 	console.log('Server statrted, listening on port 1234');
 });
 
-module.exports = app;
+module.exports = server;

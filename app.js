@@ -153,4 +153,4 @@ var server = app.listen(1234, function () {
 	console.log('Server statrted, listening on port 1234');
 });
 
-module.exports = app;
+module.exports = server;
