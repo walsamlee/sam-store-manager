@@ -150,7 +150,7 @@ app.post('/api/v1/sales', function (req, res) {
 
 
 //------------------SERVER----------------------------
-var server = app.listen(80, function () {
+var server = app.listen(1234, function () {
 	console.log('Server statrted, listening on port 1234');
 });
 
