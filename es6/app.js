@@ -1,24 +1,23 @@
-'use strict';
-
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser');
-var indexRouter = require('./routes/index');
-var Joi = require('joi');
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const indexRouter = require('./routes/index');
+const Joi = require('joi');
 
 // const products = require('./routes/product');
 // const sales = require('./routes/sales');
 
-var app = express();
+const app = express();
 
 app.use(express.json());
 
-//--------------Data structure to hold data in memory------------
-var products = [];
-var productItem = {};
 
-var sales = [];
-var saleRecord = {};
+//--------------Data structure to hold data in memory------------
+let products = [];
+let productItem = {};
+
+let sales = [];
+let saleRecord = {};
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -32,16 +31,14 @@ app.use('/', indexRouter);
 //-------------------ROUTES--------------------
 // GET /products
 
-app.get('/api/v1/products', function (req, res) {
+app.get('/api/v1/products', (req, res) => {
 	res.send(products);
 });
 
 // GET /products/<productId>
 
-app.get('/api/v1/products/:id', function (req, res) {
-	productItem = products.find(function (item) {
-		return item.id === parseInt(req.params.id);
-	});
+app.get('/api/v1/products/:id', (req, res) => {
+	productItem = products.find(item => item.id === parseInt(req.params.id));
 	if (!productItem) {
 		return res.status(404).send('Product with the given ID was not found');
 	};
@@ -50,8 +47,8 @@ app.get('/api/v1/products/:id', function (req, res) {
 
 // POST /products
 
-app.post('/api/v1/products', function (req, res) {
-	var result = validateUser(req.body);
+app.post('/api/v1/products', (req, res) => {
+	const result = validateUser(req.body)
 
 	// console.log(schema);
 
@@ -75,16 +72,14 @@ app.post('/api/v1/products', function (req, res) {
 });
 
 // GET /sales
-app.get('/api/v1/sales', function (req, res) {
+app.get('/api/v1/sales', (req, res) => {
 	res.send(sales);
-});
+})
 
 // GET /sales/<saleId>
 
-app.get('/api/v1/sales/:id', function (req, res) {
-	saleRecord = sales.find(function (sale) {
-		return sale.id === parseInt(req.params.id);
-	});
+app.get('/api/v1/sales/:id', (req, res) => {
+	saleRecord = sales.find(sale => sale.id === parseInt(req.params.id));
 	if (!saleRecord) {
 		return res.status(404).send('Sales record with the given ID was not found');
 	};
@@ -93,9 +88,9 @@ app.get('/api/v1/sales/:id', function (req, res) {
 
 // POST /sales
 
-app.post('/api/v1/sales', function (req, res) {
-	var thisSale = {
-		id: sales.length + Math.floor(Math.random() * 10 + 1),
+app.post('/api/v1/sales', (req, res) => {
+	const thisSale = {
+		id: sales.length + Math.floor((Math.random() * 10) + 1),
 		attendantId: req.body.attendantId,
 		attendantName: req.body.attendantName,
 		products: req.body.products,
@@ -111,7 +106,7 @@ app.post('/api/v1/sales', function (req, res) {
 
 //-----------------Joi data validation----------------
 function validateUser(user) {
-	var schema = {
+	const schema = {
 		name: Joi.string().required(),
 		category: Joi.string().required(),
 		description: Joi.string().required(),
@@ -122,14 +117,14 @@ function validateUser(user) {
 		// name: Joi.string().min(3).required(),
 		// sex: Joi.string().min(4).required(),
 		// age: Joi.number().integer().min(18).max(59).required()
-	};
+	}
 
 	return Joi.validate(user, schema);
 }
 //--------------end---------------------------
 
 //------------------SERVER----------------------------
-var server = app.listen(1234, function () {
+const server = app.listen(1234, () => {
 	console.log('Server statrted, listening on port 1234');
 });
 
