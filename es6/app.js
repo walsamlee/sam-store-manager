@@ -1,8 +1,14 @@
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const indexRouter = require('./routes/index');
-const Joi = require('joi');
+// const express = require('express');
+// const path = require('path');
+// const bodyParser = require('body-parser');
+// const indexRouter = require('./routes/index');
+// const Joi = require('joi');
+
+import Joi from 'joi';
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import indexRouter from './routes/index';
 
 // const products = require('./routes/product');
 // const sales = require('./routes/sales');

@@ -1,17 +1,37 @@
 'use strict';
 
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser');
-var indexRouter = require('./routes/index');
-var Joi = require('joi');
+var _joi = require('joi');
+
+var _joi2 = _interopRequireDefault(_joi);
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _index = require('./routes/index');
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // const products = require('./routes/product');
 // const sales = require('./routes/sales');
 
-var app = express();
+var app = (0, _express2.default)(); // const express = require('express');
+// const path = require('path');
+// const bodyParser = require('body-parser');
+// const indexRouter = require('./routes/index');
+// const Joi = require('joi');
 
-app.use(express.json());
+app.use(_express2.default.json());
 
 //--------------Data structure to hold data in memory------------
 var products = [];
@@ -20,14 +40,14 @@ var productItem = {};
 var sales = [];
 var saleRecord = {};
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(_express2.default.static(_path2.default.join(__dirname, 'public')));
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(_bodyParser2.default.urlencoded({ extended: true }));
 
-app.use('/', indexRouter);
+app.use('/', _index2.default);
 
 //-------------------ROUTES--------------------
 // GET /products
@@ -112,19 +132,19 @@ app.post('/api/v1/sales', function (req, res) {
 //-----------------Joi data validation----------------
 function validateUser(user) {
 	var schema = {
-		name: Joi.string().required(),
-		category: Joi.string().required(),
-		description: Joi.string().required(),
-		amount: Joi.string().required(),
-		minAllowed: Joi.string().required(),
-		price: Joi.string().required()
+		name: _joi2.default.string().required(),
+		category: _joi2.default.string().required(),
+		description: _joi2.default.string().required(),
+		amount: _joi2.default.string().required(),
+		minAllowed: _joi2.default.string().required(),
+		price: _joi2.default.string().required()
 
 		// name: Joi.string().min(3).required(),
 		// sex: Joi.string().min(4).required(),
 		// age: Joi.number().integer().min(18).max(59).required()
 	};
 
-	return Joi.validate(user, schema);
+	return _joi2.default.validate(user, schema);
 }
 //--------------end---------------------------
 
