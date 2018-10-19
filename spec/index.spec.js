@@ -3,7 +3,7 @@ const Request = require("request");
 describe("Server", () => {
     let server;
     beforeAll(() => {
-        server = require("../app");
+        server = require("../index");
     });
     afterAll(() => {
         // server.close();
