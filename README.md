@@ -1,3 +1,3 @@
 # sam-store-manager
 
-https://travis-ci.org/walsamlee/sam-store-manager.svg?branch=travis
+[![Build Status](https://travis-ci.org/walsamlee/sam-store-manager.svg?branch=travis)](https://travis-ci.org/walsamlee/sam-store-manager)
