@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Store Manager - Dashboard</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<div class="main">
+		<div class="login-info">
+			<h2>Logged in as: Akinwale Samuel <a href="/" class="btn product-btn">Logout</a></h2>
+		</div>
+		<div class="dashboard">
+			<div class="dash-options">
+				<a href="admindash" class="btn dash-btn">Admin Dashboard</a>
+				<a href="cart" class="btn dash-btn">View Cart</a>
+				<a href="salerecord.html" class="btn dash-btn">My Sales Record</a>
+			</div>
+			<div class="product-available">
+
+				<p id="showData"></p>
+
+				<script type="text/javascript">
+					const products = [];
+					const url = '/api/v1/products';
+
+					fetch(url)
+					.then(data => {return data.json()})
+					.then(products => {
+						let col = [];
+					        for (let i = 0; i < products.length; i++) {
+					            for (let key in products[i]) {
+					                if (col.indexOf(key) === -1) {
+					                    col.push(key);
+					                }
+					            }
+					        }
+
+					        // CREATE DYNAMIC TABLE.
+					        let table = document.createElement("table");
+
+					        // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+					        let tr = table.insertRow(-1);                   // TABLE ROW.
+
+					        for (let i = 0; i < col.length; i++) {
+					            let th = document.createElement("th");      // TABLE HEADER.
+					            th.innerHTML = col[i];
+					            tr.appendChild(th);
+					        }
+
+					        // ADD JSON DATA TO THE TABLE AS ROWS.
+					        for (let i = 0; i < products.length; i++) {
+
+					            tr = table.insertRow(-1);
+
+					            for (let j = 0; j < col.length; j++) {
+					                let tabCell = tr.insertCell(-1);
+					                tabCell.innerHTML = products[i][col[j]];
+					            }
+					        }
+
+					        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+					        let divContainer = document.getElementById("showData");
+					        divContainer.innerHTML = "";
+					        divContainer.appendChild(table);
+					});
+
+				</script>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
