@@ -131,8 +131,11 @@ app.post('/api/v1/sales', (req, res) => {
 
 
 //------------------SERVER----------------------------
-const server = app.listen(3000, () => {
-	console.log('Server statrted, listening on port 1234');
+
+const port = process.env.PORT || 3000;
+
+const server = app.listen(port, () => {
+	console.log(`App listening on port ${port}`)
 });
 
 module.exports = server;
