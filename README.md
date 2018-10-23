@@ -5,16 +5,16 @@
 Store Manager is a web application that helps store owners manage sales and product inventory records.
 
 ## Made with
-	### Client
-		* CSS for UI styling
+  ### Client
+    * CSS for UI styling
 
-	### Server
-		* Nodejs for server-side logic
-		* Express for api routes implementation
-		* Heroku for service hosting
+  ### Server
+	* Nodejs for server-side logic
+	* Express for api routes implementation
+	* Heroku for service hosting
 
-	### Continuous Integration
-		* Travis CI
+  ### Continuous Integration
+    * Travis CI
 
-	### Test-Driven Development
-		* Jasmine
+  ### Test-Driven Development
+	* Jasmine
