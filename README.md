@@ -18,3 +18,13 @@ Store Manager is a web application that helps store owners manage sales and prod
 
   ### Test-Driven Development
 	* Jasmine
+
+## Available APIs
+- API routes for products
+  * GET : ```/api/v1/products```
+  * GET : ```/api/v1/products/<productId>```
+  * POST : ```/api/v1/products```
+- API routes for sales
+  * GET : ```/api/v1/sales```
+  * GET : ```/api/v1/sales/<salesId>```
+  * POST : ```/api/v1/sales```
