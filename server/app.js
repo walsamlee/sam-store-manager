@@ -16,9 +16,9 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _index = require('./routes/index');
+var _router = require('./routes/router');
 
-var _index2 = _interopRequireDefault(_index);
+var _router2 = _interopRequireDefault(_router);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,11 +32,11 @@ var productItem = {};
 var sales = [];
 var saleRecord = {};
 
-app.use(_express2.default.static(_path2.default.join(__dirname, 'public')));
+var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
 
-app.use('/', _index2.default);
+app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 
-// app.get('/','index.html');
+app.use('/', _router2.default);
 
 function validateUser(user) {
   var schema = {
@@ -76,7 +76,7 @@ app.get('/api/v1/products/:productId', function (req, res) {
   });
 });
 
-app.post('/api/v1/products', function (req, res) {
+app.post('/api/v1/products', urlencodedParser, function (req, res) {
   var result = validateUser(req.body);
 
   if (result.error) {

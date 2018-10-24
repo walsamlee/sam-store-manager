@@ -2,7 +2,7 @@ import Joi from 'joi';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import indexRouter from './routes/index';
+import router from './routes/router';
 
 const app = express();
 
@@ -14,11 +14,11 @@ let productItem = {};
 const sales = [];
 let saleRecord = {};
 
-app.use(express.static(path.join(__dirname, 'public')));
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-app.use('/', indexRouter);
+app.use(express.static(path.join(__dirname, '/../public')));
 
-// app.get('/','index.html');
+app.use('/', router);
 
 function validateUser(user) {
   const schema = {
@@ -62,7 +62,7 @@ app.get('/api/v1/products/:productId', (req, res) => {
   );
 });
 
-app.post('/api/v1/products', (req, res) => {
+app.post('/api/v1/products', urlencodedParser, (req, res) => {
   const result = validateUser(req.body);
 
   if (result.error) {

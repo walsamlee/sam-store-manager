@@ -15,7 +15,7 @@
     "babel-preset-env": "^1.7.0"
   },
   "scripts": {
-    "start": "node app",
+    "start": "node server/app",
     "build": "babel --presets env es6 -d ./server --ignore ./node_modules"
   },
   "repository": {
