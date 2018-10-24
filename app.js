@@ -1,5 +1,9 @@
 'use strict';
 
+var _joi = require('joi');
+
+var _joi2 = _interopRequireDefault(_joi);
+
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
@@ -24,6 +28,8 @@ var productItem = {};
 var sales = [];
 var saleRecord = {};
 
+var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
+
 app.use(_express2.default.static(_path2.default.join(__dirname, 'public')));
 
 app.get('/', function (req, res) {
@@ -34,15 +40,15 @@ app.get('/', function (req, res) {
 
 function validateUser(user) {
   var schema = {
-    name: Joi.string().required(),
-    category: Joi.string().required(),
-    description: Joi.string().required(),
-    amount: Joi.string().required(),
-    minAllowed: Joi.string().required(),
-    price: Joi.string().required()
+    name: _joi2.default.string().required(),
+    category: _joi2.default.string().required(),
+    description: _joi2.default.string().required(),
+    amount: _joi2.default.string().required(),
+    minAllowed: _joi2.default.string().required(),
+    price: _joi2.default.string().required()
   };
 
-  return Joi.validate(user, schema);
+  return _joi2.default.validate(user, schema);
 }
 
 app.get('/api/v1/products', function (req, res) {
@@ -70,7 +76,7 @@ app.get('/api/v1/products/:productId', function (req, res) {
   });
 });
 
-app.post('/api/v1/products', function (req, res) {
+app.post('/api/v1/products', urlencodedParser, function (req, res) {
   var result = validateUser(req.body);
 
   if (result.error) {

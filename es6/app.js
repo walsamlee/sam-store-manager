@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
@@ -12,13 +13,13 @@ let productItem = {};
 const sales = [];
 let saleRecord = {};
 
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + "/" + "index.html");
 });
-
-// app.get('/','index.html');
 
 function validateUser(user) {
   const schema = {
@@ -62,7 +63,7 @@ app.get('/api/v1/products/:productId', (req, res) => {
   );
 });
 
-app.post('/api/v1/products', (req, res) => {
+app.post('/api/v1/products', urlencodedParser, (req, res) => {
   const result = validateUser(req.body);
 
   if (result.error) {
