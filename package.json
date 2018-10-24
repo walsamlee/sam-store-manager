@@ -10,7 +10,6 @@
     "joi": "^14.0.1"
   },
   "devDependencies": {
-    "eslint": "^5.7.0",
     "babel-cli": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
