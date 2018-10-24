@@ -2,6 +2,7 @@ import Joi from 'joi';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
+import router from './routes/router';
 
 const app = express();
 
@@ -15,11 +16,9 @@ let saleRecord = {};
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/../public')));
 
-app.get('/', (req, res) => {
-	res.sendFile(__dirname + "/" + "index.html");
-});
+app.use('/', router);
 
 function validateUser(user) {
   const schema = {

@@ -16,6 +16,10 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
+var _router = require('./routes/router');
+
+var _router2 = _interopRequireDefault(_router);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -30,11 +34,9 @@ var saleRecord = {};
 
 var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
 
-app.use(_express2.default.static(_path2.default.join(__dirname, 'UI')));
+app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + "/" + "index.html");
-});
+app.use('/', _router2.default);
 
 function validateUser(user) {
   var schema = {
