@@ -1,9 +1,5 @@
 'use strict';
 
-var _joi = require('joi');
-
-var _joi2 = _interopRequireDefault(_joi);
-
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
@@ -15,10 +11,6 @@ var _path2 = _interopRequireDefault(_path);
 var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
-var _index = require('./routes/index');
-
-var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34,21 +26,23 @@ var saleRecord = {};
 
 app.use(_express2.default.static(_path2.default.join(__dirname, 'public')));
 
-app.use('/', _index2.default);
+app.get('/', function (req, res) {
+  res.sendFile(__dirname + "/" + "index.html");
+});
 
 // app.get('/','index.html');
 
 function validateUser(user) {
   var schema = {
-    name: _joi2.default.string().required(),
-    category: _joi2.default.string().required(),
-    description: _joi2.default.string().required(),
-    amount: _joi2.default.string().required(),
-    minAllowed: _joi2.default.string().required(),
-    price: _joi2.default.string().required()
+    name: Joi.string().required(),
+    category: Joi.string().required(),
+    description: Joi.string().required(),
+    amount: Joi.string().required(),
+    minAllowed: Joi.string().required(),
+    price: Joi.string().required()
   };
 
-  return _joi2.default.validate(user, schema);
+  return Joi.validate(user, schema);
 }
 
 app.get('/api/v1/products', function (req, res) {

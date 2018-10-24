@@ -1,8 +1,6 @@
-import Joi from 'joi';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import indexRouter from './routes/index';
 
 const app = express();
 
@@ -16,7 +14,9 @@ let saleRecord = {};
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.get('/', (req, res) => {
+	res.sendFile(__dirname + "/" + "index.html");
+});
 
 // app.get('/','index.html');
 
