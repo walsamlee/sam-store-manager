@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "node app",
-    "build": "babel --presets env es6 -d ./ --ignore ./node_modules"
+    "build": "babel --presets env es6 -d ./server --ignore ./node_modules"
   },
   "repository": {
     "type": "git",
