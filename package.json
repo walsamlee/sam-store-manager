@@ -1,0 +1,25 @@
+{
+  "name": "sam-store-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "grunt": "^1.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walsamlee/sam-store-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walsamlee/sam-store-manager/issues"
+  },
+  "homepage": "https://github.com/walsamlee/sam-store-manager#readme"
+}
