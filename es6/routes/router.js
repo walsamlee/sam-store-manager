@@ -29,8 +29,8 @@ router.get('/attendantprofile', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, '/../../UI/attendantprofile.html'));
 });
 
-router.get('/attendant', (req, res) => {
-  res.status(200).sendFile(path.join(__dirname, '/../../UI/attendant.html'));
+router.get('/attendants', (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, '/../../UI/attendants.html'));
 });
 
 router.get('/cart', (req, res) => {

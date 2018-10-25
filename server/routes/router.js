@@ -38,8 +38,8 @@ router.get('/attendantprofile', function (req, res) {
   res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/attendantprofile.html'));
 });
 
-router.get('/attendant', function (req, res) {
-  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/attendant.html'));
+router.get('/attendants', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/attendants.html'));
 });
 
 router.get('/cart', function (req, res) {
