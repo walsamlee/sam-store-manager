@@ -22,7 +22,7 @@
   "scripts": {
     "start": "node server/app",
     "build": "babel --presets env es6 -d ./server --ignore ./node_modules",
-    "test": "mocha server/test/"
+    "test": "mocha --exit server/test/"
   },
   "repository": {
     "type": "git",
