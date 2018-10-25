@@ -16,6 +16,7 @@
     "babel-preset-env": "^1.7.0",
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
+    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "mocha-lcov-reporter": "^1.3.0",
     "superagent": "^4.0.0-beta.5",
@@ -24,7 +25,7 @@
   "scripts": {
     "start": "node server/app",
     "build": "babel --presets env es6 -d ./server --ignore ./node_modules",
-    "test": "mocha server/test/"
+    "test": "mocha --exit server/test/"
   },
   "repository": {
     "type": "git",
