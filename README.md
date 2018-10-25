@@ -1,6 +1,6 @@
 # sam-store-manager
 
-[![Build Status](https://travis-ci.org/walsamlee/sam-store-manager.svg?branch=api-endpoint)](https://travis-ci.org/walsamlee/sam-store-manager)
+[![Build Status](https://travis-ci.org/walsamlee/sam-store-manager.svg?branch=ch-setup-travis-ci-161475643)](https://travis-ci.org/walsamlee/sam-store-manager)
 
 Store Manager is a web application that helps store owners manage sales and product inventory records.
 
