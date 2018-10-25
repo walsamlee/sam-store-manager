@@ -30,4 +30,40 @@ router.get('/addproduct', function (req, res) {
   res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/addproduct.html'));
 });
 
+router.get('/addattendant', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/addattendant.html'));
+});
+
+router.get('/attendantprofile', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/attendantprofile.html'));
+});
+
+router.get('/attendant', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/attendant.html'));
+});
+
+router.get('/cart', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/cart.html'));
+});
+
+router.get('/deleteproduct', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/deleteproduct.html'));
+});
+
+router.get('/editproduct', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/editproduct.html'));
+});
+
+router.get('/salerecord', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/salerecord.html'));
+});
+
+router.get('/viewsales', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/viewsales.html'));
+});
+
+router.get('/product', function (req, res) {
+  res.status(200).sendFile(_path2.default.join(__dirname, '/../../UI/product.html'));
+});
+
 module.exports = router;
