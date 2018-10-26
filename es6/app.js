@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, '/../public')));
 
 app.use('/', router);
 
-function validateUser(user) {
+const validate = (user) => {
   const schema = {
     name: Joi.string().required(),
     category: Joi.string().required(),
@@ -63,7 +63,7 @@ app.get('/api/v1/products/:productId', (req, res) => {
 });
 
 app.post('/api/v1/products', urlencodedParser, (req, res) => {
-  const result = validateUser(req.body);
+  const result = validate(req.body);
 
   if (result.error) {
     return res.status(400).send(result.error.details[0].message);

@@ -38,7 +38,7 @@ app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 
 app.use('/', _router2.default);
 
-function validateUser(user) {
+var validate = function validate(user) {
   var schema = {
     name: _joi2.default.string().required(),
     category: _joi2.default.string().required(),
@@ -49,7 +49,7 @@ function validateUser(user) {
   };
 
   return _joi2.default.validate(user, schema);
-}
+};
 
 app.get('/api/v1/products', function (req, res) {
   res.send({
@@ -77,7 +77,7 @@ app.get('/api/v1/products/:productId', function (req, res) {
 });
 
 app.post('/api/v1/products', urlencodedParser, function (req, res) {
-  var result = validateUser(req.body);
+  var result = validate(req.body);
 
   if (result.error) {
     return res.status(400).send(result.error.details[0].message);
