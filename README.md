@@ -18,7 +18,7 @@ Store Manager is a web application that helps store owners manage sales and prod
     * Travis CI
 
   ### Test-Driven Development
-	* Jasmine
+	* Mocha with Chai
 
 ## Available APIs
 - API routes for products
