@@ -33,15 +33,13 @@ var sales = [];
 
 var saleRecord = {};
 
-var loginUser = {};
-
 var users = [{
-  username: "admin",
-  password: "computer",
+  username: 'admin',
+  password: 'computer',
   priviledge: 1
 }, {
-  username: "sam",
-  password: "computer1",
+  username: 'sam',
+  password: 'computer1',
   priviledge: 0
 }];
 
@@ -65,23 +63,19 @@ var validate = function validate(prodItem) {
 };
 
 app.post('/api/v1/login', function (req, res) {
-  var checkUser = {};
-
-  if (checkUser = users.find(function (user) {
+  var checkUser = users.find(function (user) {
     return user.username === req.body.username;
-  })) {
+  });
+  if (checkUser) {
     if (checkUser.password === req.body.password) {
       if (checkUser.priviledge === 1) {
         return res.send('Admin route access granted');
-      } else {
-        return res.send('Admin route access not granted');
       }
-    } else {
-      return res.send('Wrong password: ' + req.body.password + ' entered');
+      return res.send('Admin route access not granted');
     }
-  } else {
-    return res.send(req.body.username + ' not found');
+    return res.send('Wrong password: ' + req.body.password + ' entered');
   }
+  return res.send(req.body.username + ' not found');
 });
 
 app.get('/api/v1/products', function (req, res) {
@@ -113,7 +107,10 @@ app.post('/api/v1/products', urlencodedParser, function (req, res) {
   var result = validate(req.body);
 
   if (result.error) {
-    return res.status(400).send(result.error.details[0].message);
+    return res.status(400).send({
+      success: false,
+      message: result.error.details[0].message
+    });
   }
 
   productItem = {

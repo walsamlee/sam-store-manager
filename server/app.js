@@ -15,20 +15,18 @@ const sales = [];
 
 let saleRecord = {};
 
-let loginUser = {};
-
 const users = [
   {
-    username: "admin",
-    password: "computer",
-    priviledge: 1
+    username: 'admin',
+    password: 'computer',
+    priviledge: 1,
   },
   {
-    username: "sam",
-    password: "computer1",
-    priviledge: 0
-  }
-]
+    username: 'sam',
+    password: 'computer1',
+    priviledge: 0,
+  },
+];
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -47,24 +45,20 @@ const validate = (prodItem) => {
   };
 
   return Joi.validate(prodItem, schema);
-}
+};
 
 app.post('/api/v1/login', (req, res) => {
-  let checkUser = {};
-
-  if (checkUser = users.find(user => user.username === req.body.username)) {
-    if (checkUser.password ===  req.body.password) {
+  const checkUser = users.find(user => user.username === req.body.username);
+  if (checkUser) {
+    if (checkUser.password === req.body.password) {
       if (checkUser.priviledge === 1) {
         return res.send('Admin route access granted');
-      } else{
-        return res.send('Admin route access not granted');
       }
-    } else {
-      return res.send(`Wrong password: ${req.body.password} entered`);
+      return res.send('Admin route access not granted');
     }
-  } else {
-    return res.send(`${req.body.username} not found`);
+    return res.send(`Wrong password: ${req.body.password} entered`);
   }
+  return res.send(`${req.body.username} not found`);
 });
 
 app.get('/api/v1/products', (req, res) => {
@@ -102,7 +96,7 @@ app.post('/api/v1/products', urlencodedParser, (req, res) => {
   if (result.error) {
     return res.status(400).send({
       success: false,
-      message: result.error.details[0].message
+      message: result.error.details[0].message,
     });
   }
 
