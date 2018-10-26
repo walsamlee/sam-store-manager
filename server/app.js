@@ -12,7 +12,23 @@ const products = [];
 let productItem = {};
 
 const sales = [];
+
 let saleRecord = {};
+
+let loginUser = {};
+
+const users = [
+  {
+    username: "admin",
+    password: "computer",
+    priviledge: 1
+  },
+  {
+    username: "sam",
+    password: "computer1",
+    priviledge: 0
+  }
+]
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -20,7 +36,7 @@ app.use(express.static(path.join(__dirname, '/../public')));
 
 app.use('/', router);
 
-const validate = (user) => {
+const validate = (prodItem) => {
   const schema = {
     name: Joi.string().required(),
     category: Joi.string().required(),
@@ -30,8 +46,26 @@ const validate = (user) => {
     price: Joi.string().required(),
   };
 
-  return Joi.validate(user, schema);
+  return Joi.validate(prodItem, schema);
 }
+
+app.post('/api/v1/login', (req, res) => {
+  let checkUser = {};
+
+  if (checkUser = users.find(user => user.username === req.body.username)) {
+    if (checkUser.password ===  req.body.password) {
+      if (checkUser.priviledge === 1) {
+        return res.send('Admin route access granted');
+      } else{
+        return res.send('Admin route access not granted');
+      }
+    } else {
+      return res.send(`Wrong password: ${req.body.password} entered`);
+    }
+  } else {
+    return res.send(`${req.body.username} not found`);
+  }
+});
 
 app.get('/api/v1/products', (req, res) => {
   res.send(
@@ -66,7 +100,10 @@ app.post('/api/v1/products', urlencodedParser, (req, res) => {
   const result = validate(req.body);
 
   if (result.error) {
-    return res.status(400).send(result.error.details[0].message);
+    return res.status(400).send({
+      success: false,
+      message: result.error.details[0].message
+    });
   }
 
   productItem = {

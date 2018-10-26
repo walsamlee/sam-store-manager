@@ -30,7 +30,20 @@ var products = [];
 var productItem = {};
 
 var sales = [];
+
 var saleRecord = {};
+
+var loginUser = {};
+
+var users = [{
+  username: "admin",
+  password: "computer",
+  priviledge: 1
+}, {
+  username: "sam",
+  password: "computer1",
+  priviledge: 0
+}];
 
 var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
 
@@ -38,7 +51,7 @@ app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 
 app.use('/', _router2.default);
 
-var validate = function validate(user) {
+var validate = function validate(prodItem) {
   var schema = {
     name: _joi2.default.string().required(),
     category: _joi2.default.string().required(),
@@ -48,8 +61,28 @@ var validate = function validate(user) {
     price: _joi2.default.string().required()
   };
 
-  return _joi2.default.validate(user, schema);
+  return _joi2.default.validate(prodItem, schema);
 };
+
+app.post('/api/v1/login', function (req, res) {
+  var checkUser = {};
+
+  if (checkUser = users.find(function (user) {
+    return user.username === req.body.username;
+  })) {
+    if (checkUser.password === req.body.password) {
+      if (checkUser.priviledge === 1) {
+        return res.send('Admin route access granted');
+      } else {
+        return res.send('Admin route access not granted');
+      }
+    } else {
+      return res.send('Wrong password: ' + req.body.password + ' entered');
+    }
+  } else {
+    return res.send(req.body.username + ' not found');
+  }
+});
 
 app.get('/api/v1/products', function (req, res) {
   res.send({

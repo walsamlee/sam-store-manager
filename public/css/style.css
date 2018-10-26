@@ -131,6 +131,12 @@ th, td {
     color: #fff;
 }
 
+.cart-btn {
+	color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
 .form-text {
 	display: block;
     width: 90%;

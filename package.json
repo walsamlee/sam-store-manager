@@ -23,9 +23,9 @@
     "supertest": "^3.3.0"
   },
   "scripts": {
-    "start": "node server/app",
+    "start": "node dist/app",
     "build": "babel --presets env server -d ./dist --ignore ./node_modules",
-    "test": "mocha server/test/",
+    "test": "mocha dist/test/",
     "cover": "istanbul cover _mocha server/test/",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
