@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "node server/app",
-    "build": "babel --presets env es6 -d ./server --ignore ./node_modules",
+    "build": "babel --presets env server -d ./dist --ignore ./node_modules",
     "test": "mocha server/test/",
     "cover": "istanbul cover _mocha server/test/",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
