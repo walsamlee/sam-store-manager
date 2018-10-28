@@ -3,6 +3,7 @@ import path from 'path';
 
 const router = express.Router();
 
+/*** *************** App Routes ******************** */
 router.get('/', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, '/../../UI/index.html'));
 });
@@ -54,6 +55,5 @@ router.get('/viewsales', (req, res) => {
 router.get('/product', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, '/../../UI/product.html'));
 });
-
 
 module.exports = router;

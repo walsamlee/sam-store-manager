@@ -1,9 +1,5 @@
 'use strict';
 
-var _joi = require('joi');
-
-var _joi2 = _interopRequireDefault(_joi);
-
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
@@ -16,15 +12,41 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
+var _passport = require('passport');
+
+var _passport2 = _interopRequireDefault(_passport);
+
+var _passportLocal = require('passport-local');
+
+var _passportLocal2 = _interopRequireDefault(_passportLocal);
+
+var _expressSession = require('express-session');
+
+var _expressSession2 = _interopRequireDefault(_expressSession);
+
+var _uuid = require('uuid');
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
 var _router = require('./routes/router');
 
 var _router2 = _interopRequireDefault(_router);
+
+var _validateproduct = require('./partials/validateproduct');
+
+var _validateproduct2 = _interopRequireDefault(_validateproduct);
+
+var _validatesale = require('./partials/validatesale');
+
+var _validatesale2 = _interopRequireDefault(_validatesale);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
 
 app.use(_express2.default.json());
+
+var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
 
 var products = [];
 var productItem = {};
@@ -34,58 +56,97 @@ var sales = [];
 var saleRecord = {};
 
 var users = [{
-  username: 'admin',
+  id: 1,
+  email: 'admin@store.com',
   password: 'computer',
-  priviledge: 1
+  previllege: 1
 }, {
-  username: 'sam',
-  password: 'computer1',
-  priviledge: 0
+  id: 2,
+  email: 'attendant1@store.com',
+  password: 'computer',
+  previllege: 0
+}, {
+  id: 3,
+  email: 'attendant2@store.com',
+  password: 'computer',
+  previllege: 0
 }];
 
-var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
+_passport2.default.use(new _passportLocal2.default({
+  usernameField: 'email'
+}, function (email, password, done) {
+  // const user = users.find((user) => {
+  //  user.email === email;
+  // })
+
+  var user = users[0];
+
+  if (email === user.email && password === user.password) {
+    return done(null, user);
+  }
+}));
+
+_passport2.default.serializeUser(function (user, done) {
+  done(null, user.id);
+});
+
+_passport2.default.deserializeUser(function (id, done) {
+  var user = users[0].id === id ? users[0] : false;
+  done(err, user);
+});
+
+app.use((0, _expressSession2.default)({
+  genid: function genid(req) {
+    return (0, _uuid2.default)();
+  },
+  // store: new FileStore(),
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}));
+
+app.use(_passport2.default.initialize());
+app.use(_passport2.default.session());
 
 app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 
 app.use('/', _router2.default);
 
-var validate = function validate(prodItem) {
-  var schema = {
-    name: _joi2.default.string().required(),
-    category: _joi2.default.string().required(),
-    description: _joi2.default.string().required(),
-    amount: _joi2.default.string().required(),
-    minAllowed: _joi2.default.string().required(),
-    price: _joi2.default.string().required()
-  };
+/*** **************************** API Enpoints ********************************** */
 
-  return _joi2.default.validate(prodItem, schema);
-};
-
-app.post('/api/v1/login', function (req, res) {
-  var checkUser = users.find(function (user) {
-    return user.username === req.body.username;
-  });
-  if (checkUser) {
-    if (checkUser.password === req.body.password) {
-      if (checkUser.priviledge === 1) {
-        return res.send('Admin route access granted');
-      }
-      return res.send('Admin route access not granted');
+/*** -------------User API-------------------- */
+/*** ############# POST User ################# */
+app.post('/api/v1/login', function (req, res, next) {
+  _passport2.default.authenticate('local', function (err, user, info) {
+    if (info) {
+      return res.send(info.message);
     }
-    return res.send('Wrong password: ' + req.body.password + ' entered');
-  }
-  return res.send(req.body.username + ' not found');
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.send('Error logging in');
+    }
+    req.login(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return res.send('Send to admin dashboard');
+    });
+  })(req, res, next);
 });
 
+/*** -------------Product API-------------------- */
+/*** ############# GET Product ################# */
 app.get('/api/v1/products', function (req, res) {
   res.send({
     success: true,
-    message: 'products was successfully retirieved',
+    message: 'products was successfully retrieved',
     data: products
   });
 });
 
+/*** ############ GET Product by productId ################ */
 app.get('/api/v1/products/:productId', function (req, res) {
   productItem = products.find(function (item) {
     return item.productId === parseInt(req.params.productId, 10);
@@ -103,35 +164,55 @@ app.get('/api/v1/products/:productId', function (req, res) {
   });
 });
 
-app.post('/api/v1/products', urlencodedParser, function (req, res) {
-  var result = validate(req.body);
+/*** ####################### POST Product ######################## */
+app.post('/api/v1/products', function (req, res) {
 
-  if (result.error) {
-    return res.status(400).send({
+  if (req.isAuthenticated()) {
+    var authuser = req.user;
+    if (authuser.previllege === 1) {
+      /*** +++++++++++++++ Validate data +++++++++++++++++ */
+      var result = (0, _validateproduct2.default)(req.body);
+
+      if (result.error) {
+        return res.status(400).send({
+          success: false,
+          message: result.error.details[0].message
+        });
+      }
+
+      productItem = {
+        productId: products.length + 1,
+        name: req.body.name,
+        category: req.body.category,
+        description: req.body.description,
+        amount: req.body.amount,
+        minAllowed: req.body.minAllowed,
+        price: req.body.price
+      };
+
+      products.push(productItem);
+
+      return res.send({
+        success: true,
+        message: 'Product added to inventory successfully',
+        data: productItem
+      });
+    } else {
+      return res.send({
+        success: false,
+        message: 'You don\'t have permission to be here'
+      });
+    }
+  } else {
+    res.send({
       success: false,
-      message: result.error.details[0].message
+      message: 'Please login as admin'
     });
   }
-
-  productItem = {
-    productId: products.length + 1,
-    name: req.body.name,
-    category: req.body.category,
-    description: req.body.description,
-    amount: req.body.amount,
-    minAllowed: req.body.minAllowed,
-    price: req.body.price
-  };
-
-  products.push(productItem);
-
-  return res.send({
-    success: true,
-    message: 'Product added to inventory successfully',
-    data: productItem
-  });
 });
 
+/*** ------------------ Sales API ------------------ */
+//################# GET Sales record ##########
 app.get('/api/v1/sales', function (req, res) {
   res.send({
     success: true,
@@ -140,6 +221,7 @@ app.get('/api/v1/sales', function (req, res) {
   });
 });
 
+/*** ################# GET Sales Record by salesId ################ */
 app.get('/api/v1/sales/:saleId', function (req, res) {
   saleRecord = sales.find(function (sale) {
     return sale.saleId === parseInt(req.params.saleId, 10);
@@ -157,9 +239,19 @@ app.get('/api/v1/sales/:saleId', function (req, res) {
   });
 });
 
+/*** ################# POST Sales Record ################## */
 app.post('/api/v1/sales', function (req, res) {
+  var result = (0, _validatesale2.default)(req.body);
+
+  if (result.error) {
+    return res.status(404).send({
+      success: false,
+      message: result.error.details[0].message
+    });
+  }
+
   var thisSale = {
-    saleId: sales.length + Math.floor(Math.random() * 10 + 1),
+    saleId: sales.length + 1,
     attendantId: req.body.attendantId,
     attendantName: req.body.attendantName,
     products: req.body.products,
@@ -169,10 +261,10 @@ app.post('/api/v1/sales', function (req, res) {
 
   sales.push(thisSale);
 
-  res.send({
+  return res.send({
     success: true,
     message: 'Sales has been recorded successfully',
-    date: thisSale
+    data: thisSale
   });
 });
 

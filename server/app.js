@@ -1,12 +1,19 @@
-import Joi from 'joi';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
+import passport from 'passport';
+import strategy from 'passport-local';
+import session from 'express-session';
+import uuid from 'uuid';
 import router from './routes/router';
+import validateProduct from './partials/validateproduct';
+import validateSale from './partials/validatesale';
 
 const app = express();
 
 app.use(express.json());
+
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const products = [];
 let productItem = {};
@@ -17,60 +24,104 @@ let saleRecord = {};
 
 const users = [
   {
-    username: 'admin',
+    id: 1,
+    email: 'admin@store.com',
     password: 'computer',
-    priviledge: 1,
+    previllege: 1, 
   },
   {
-    username: 'sam',
-    password: 'computer1',
-    priviledge: 0,
+    id: 2,
+    email: 'attendant1@store.com',
+    password: 'computer',
+    previllege: 0, 
+  },
+  {
+    id: 3,
+    email: 'attendant2@store.com',
+    password: 'computer',
+    previllege: 0, 
   },
 ];
 
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
+passport.use(new strategy({
+  usernameField: 'email'
+  },
+  (email, password, done) => {
+    // const user = users.find((user) => {
+    //  user.email === email;
+    // })
+
+    const user = users[0];
+
+    if (email === user.email && password === user.password) {
+      return done(null, user);
+    }
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+ 
+passport.deserializeUser(function(id, done) {
+  const user = users[0].id === id ? users[0] : false; 
+  done(err, user);
+});
+
+app.use(session({
+  genid: (req) => {
+    return uuid();
+  },
+  // store: new FileStore(),
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '/../public')));
 
 app.use('/', router);
 
-const validate = (prodItem) => {
-  const schema = {
-    name: Joi.string().required(),
-    category: Joi.string().required(),
-    description: Joi.string().required(),
-    amount: Joi.string().required(),
-    minAllowed: Joi.string().required(),
-    price: Joi.string().required(),
-  };
+/*** **************************** API Enpoints ********************************** */
 
-  return Joi.validate(prodItem, schema);
-};
-
-app.post('/api/v1/login', (req, res) => {
-  const checkUser = users.find(user => user.username === req.body.username);
-  if (checkUser) {
-    if (checkUser.password === req.body.password) {
-      if (checkUser.priviledge === 1) {
-        return res.send('Admin route access granted');
-      }
-      return res.send('Admin route access not granted');
+/*** -------------User API-------------------- */
+/*** ############# POST User ################# */
+app.post('/api/v1/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if(info) {
+      return res.send(info.message)
     }
-    return res.send(`Wrong password: ${req.body.password} entered`);
-  }
-  return res.send(`${req.body.username} not found`);
+    if (err) { 
+      return next(err); 
+    }
+    if (!user) { 
+      return res.send('Error logging in'); 
+    }
+    req.login(user, (err) => {
+      if (err) { 
+        return next(err); 
+      }
+      return res.send('Send to admin dashboard');
+    })
+  })(req, res, next);
 });
 
+/*** -------------Product API-------------------- */
+/*** ############# GET Product ################# */
 app.get('/api/v1/products', (req, res) => {
   res.send(
     {
       success: true,
-      message: 'products was successfully retirieved',
+      message: 'products was successfully retrieved',
       data: products,
     },
   );
 });
 
+/*** ############ GET Product by productId ################ */
 app.get('/api/v1/products/:productId', (req, res) => {
   productItem = products.find(item => item.productId === parseInt(req.params.productId, 10));
   if (!productItem) {
@@ -90,37 +141,62 @@ app.get('/api/v1/products/:productId', (req, res) => {
   );
 });
 
-app.post('/api/v1/products', urlencodedParser, (req, res) => {
-  const result = validate(req.body);
+/*** ####################### POST Product ######################## */
+app.post('/api/v1/products', (req, res) => {
 
-  if (result.error) {
-    return res.status(400).send({
-      success: false,
-      message: result.error.details[0].message,
-    });
+  if (req.isAuthenticated()) {
+    const authuser = req.user;
+    if (authuser.previllege === 1) {
+      /*** +++++++++++++++ Validate data +++++++++++++++++ */
+      const result = validateProduct(req.body);
+
+      if (result.error) {
+        return res.status(400).send({
+          success: false,
+          message: result.error.details[0].message,
+        });
+      }
+
+      productItem = {
+        productId: products.length + 1,
+        name: req.body.name,
+        category: req.body.category,
+        description: req.body.description,
+        amount: req.body.amount,
+        minAllowed: req.body.minAllowed,
+        price: req.body.price,
+      };
+
+      products.push(productItem);
+
+      return res.send(
+        {
+          success: true,
+          message: 'Product added to inventory successfully',
+          data: productItem,
+        },
+      );
+    } else {
+      return res.send(
+        {
+          success: false,
+          message: 'You don\'t have permission to be here',
+        }
+      );
+    }
+  } else {
+    res.send(
+        {
+          success: false,
+          message: 'Please login as admin',
+        }
+      )
   }
-
-  productItem = {
-    productId: products.length + 1,
-    name: req.body.name,
-    category: req.body.category,
-    description: req.body.description,
-    amount: req.body.amount,
-    minAllowed: req.body.minAllowed,
-    price: req.body.price,
-  };
-
-  products.push(productItem);
-
-  return res.send(
-    {
-      success: true,
-      message: 'Product added to inventory successfully',
-      data: productItem,
-    },
-  );
+  
 });
 
+/*** ------------------ Sales API ------------------ */
+//################# GET Sales record ##########
 app.get('/api/v1/sales', (req, res) => {
   res.send(
     {
@@ -131,6 +207,7 @@ app.get('/api/v1/sales', (req, res) => {
   );
 });
 
+/*** ################# GET Sales Record by salesId ################ */
 app.get('/api/v1/sales/:saleId', (req, res) => {
   saleRecord = sales.find(sale => sale.saleId === parseInt(req.params.saleId, 10));
   if (!saleRecord) {
@@ -150,9 +227,19 @@ app.get('/api/v1/sales/:saleId', (req, res) => {
   );
 });
 
+/*** ################# POST Sales Record ################## */
 app.post('/api/v1/sales', (req, res) => {
+  const result = validateSale(req.body);
+
+  if(result.error) {
+    return res.status(404).send({
+      success: false,
+      message: result.error.details[0].message,
+    });
+  }
+
   const thisSale = {
-    saleId: sales.length + Math.floor((Math.random() * 10) + 1),
+    saleId: sales.length + 1,
     attendantId: req.body.attendantId,
     attendantName: req.body.attendantName,
     products: req.body.products,
@@ -162,11 +249,11 @@ app.post('/api/v1/sales', (req, res) => {
 
   sales.push(thisSale);
 
-  res.send(
+  return res.send(
     {
       success: true,
       message: 'Sales has been recorded successfully',
-      date: thisSale,
+      data: thisSale,
     },
   );
 });
