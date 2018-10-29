@@ -40,6 +40,14 @@ var _validatesale = require('./partials/validatesale');
 
 var _validatesale2 = _interopRequireDefault(_validatesale);
 
+var _Auth = require('./middleware/Auth');
+
+var _Auth2 = _interopRequireDefault(_Auth);
+
+var _Helper = require('./controller/Helper');
+
+var _Helper2 = _interopRequireDefault(_Helper);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -112,32 +120,14 @@ app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 
 app.use('/', _router2.default);
 
-/*** **************************** API Enpoints ********************************** */
+/** * **************************** API Enpoints ********************************** */
 
-/*** -------------User API-------------------- */
-/*** ############# POST User ################# */
-app.post('/api/v1/login', function (req, res, next) {
-  _passport2.default.authenticate('local', function (err, user, info) {
-    if (info) {
-      return res.send(info.message);
-    }
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.send('Error logging in');
-    }
-    req.login(user, function (err) {
-      if (err) {
-        return next(err);
-      }
-      return res.send('Send to admin dashboard');
-    });
-  })(req, res, next);
-});
+/** * -------------User API-------------------- */
+/** * ############# POST User ################# */
+app.post('/api/v1/login', function (req, res, next) {});
 
-/*** -------------Product API-------------------- */
-/*** ############# GET Product ################# */
+/** * -------------Product API-------------------- */
+/** * ############# GET Product ################# */
 app.get('/api/v1/products', function (req, res) {
   res.send({
     success: true,
@@ -146,7 +136,7 @@ app.get('/api/v1/products', function (req, res) {
   });
 });
 
-/*** ############ GET Product by productId ################ */
+/** * ############ GET Product by productId ################ */
 app.get('/api/v1/products/:productId', function (req, res) {
   productItem = products.find(function (item) {
     return item.productId === parseInt(req.params.productId, 10);
@@ -164,13 +154,12 @@ app.get('/api/v1/products/:productId', function (req, res) {
   });
 });
 
-/*** ####################### POST Product ######################## */
+/** * ####################### POST Product ######################## */
 app.post('/api/v1/products', function (req, res) {
-
   if (req.isAuthenticated()) {
     var authuser = req.user;
     if (authuser.previllege === 1) {
-      /*** +++++++++++++++ Validate data +++++++++++++++++ */
+      /** * +++++++++++++++ Validate data +++++++++++++++++ */
       var result = (0, _validateproduct2.default)(req.body);
 
       if (result.error) {
@@ -197,31 +186,23 @@ app.post('/api/v1/products', function (req, res) {
         message: 'Product added to inventory successfully',
         data: productItem
       });
-    } else {
-      return res.send({
-        success: false,
-        message: 'You don\'t have permission to be here'
-      });
     }
-  } else {
-    res.send({
+    return res.send({
       success: false,
-      message: 'Please login as admin'
+      message: 'You don\'t have permission to be here'
     });
   }
-});
-
-/*** ------------------ Sales API ------------------ */
-//################# GET Sales record ##########
-app.get('/api/v1/sales', function (req, res) {
   res.send({
-    success: true,
-    message: 'Sales record was successfully retirieved',
-    data: sales
+    success: false,
+    message: 'Please login as admin'
   });
 });
 
-/*** ################# GET Sales Record by salesId ################ */
+/** * ------------------ Sales API ------------------ */
+// ################# GET Sales record ##########
+app.get('/api/v1/sales', _Auth2.default.verifyAdmin, _Helper2.default.sales);
+
+/** * ################# GET Sales Record by salesId ################ */
 app.get('/api/v1/sales/:saleId', function (req, res) {
   saleRecord = sales.find(function (sale) {
     return sale.saleId === parseInt(req.params.saleId, 10);
@@ -239,7 +220,7 @@ app.get('/api/v1/sales/:saleId', function (req, res) {
   });
 });
 
-/*** ################# POST Sales Record ################## */
+/** * ################# POST Sales Record ################## */
 app.post('/api/v1/sales', function (req, res) {
   var result = (0, _validatesale2.default)(req.body);
 

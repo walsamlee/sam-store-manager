@@ -8,6 +8,9 @@ import uuid from 'uuid';
 import router from './routes/router';
 import validateProduct from './partials/validateproduct';
 import validateSale from './partials/validatesale';
+import Auth from './middleware/Auth';
+import Helper from './controller/Helper';
+
 
 const app = express();
 
@@ -27,55 +30,52 @@ const users = [
     id: 1,
     email: 'admin@store.com',
     password: 'computer',
-    previllege: 1, 
+    previllege: 1,
   },
   {
     id: 2,
     email: 'attendant1@store.com',
     password: 'computer',
-    previllege: 0, 
+    previllege: 0,
   },
   {
     id: 3,
     email: 'attendant2@store.com',
     password: 'computer',
-    previllege: 0, 
+    previllege: 0,
   },
 ];
 
 passport.use(new strategy({
-  usernameField: 'email'
-  },
-  (email, password, done) => {
-    // const user = users.find((user) => {
-    //  user.email === email;
-    // })
+  usernameField: 'email',
+},
+(email, password, done) => {
+  // const user = users.find((user) => {
+  //  user.email === email;
+  // })
 
-    const user = users[0];
+  const user = users[0];
 
-    if (email === user.email && password === user.password) {
-      return done(null, user);
-    }
+  if (email === user.email && password === user.password) {
+    return done(null, user);
   }
-));
+}));
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser((user, done) => {
   done(null, user.id);
 });
- 
-passport.deserializeUser(function(id, done) {
-  const user = users[0].id === id ? users[0] : false; 
+
+passport.deserializeUser((id, done) => {
+  const user = users[0].id === id ? users[0] : false;
   done(err, user);
 });
 
 app.use(session({
-  genid: (req) => {
-    return uuid();
-  },
+  genid: req => uuid(),
   // store: new FileStore(),
   secret: 'keyboard cat',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
 }));
 
 app.use(passport.initialize());
@@ -85,32 +85,16 @@ app.use(express.static(path.join(__dirname, '/../public')));
 
 app.use('/', router);
 
-/*** **************************** API Enpoints ********************************** */
+/** * **************************** API Enpoints ********************************** */
 
-/*** -------------User API-------------------- */
-/*** ############# POST User ################# */
+/** * -------------User API-------------------- */
+/** * ############# POST User ################# */
 app.post('/api/v1/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if(info) {
-      return res.send(info.message)
-    }
-    if (err) { 
-      return next(err); 
-    }
-    if (!user) { 
-      return res.send('Error logging in'); 
-    }
-    req.login(user, (err) => {
-      if (err) { 
-        return next(err); 
-      }
-      return res.send('Send to admin dashboard');
-    })
-  })(req, res, next);
+
 });
 
-/*** -------------Product API-------------------- */
-/*** ############# GET Product ################# */
+/** * -------------Product API-------------------- */
+/** * ############# GET Product ################# */
 app.get('/api/v1/products', (req, res) => {
   res.send(
     {
@@ -121,7 +105,7 @@ app.get('/api/v1/products', (req, res) => {
   );
 });
 
-/*** ############ GET Product by productId ################ */
+/** * ############ GET Product by productId ################ */
 app.get('/api/v1/products/:productId', (req, res) => {
   productItem = products.find(item => item.productId === parseInt(req.params.productId, 10));
   if (!productItem) {
@@ -141,13 +125,12 @@ app.get('/api/v1/products/:productId', (req, res) => {
   );
 });
 
-/*** ####################### POST Product ######################## */
+/** * ####################### POST Product ######################## */
 app.post('/api/v1/products', (req, res) => {
-
   if (req.isAuthenticated()) {
     const authuser = req.user;
     if (authuser.previllege === 1) {
-      /*** +++++++++++++++ Validate data +++++++++++++++++ */
+      /** * +++++++++++++++ Validate data +++++++++++++++++ */
       const result = validateProduct(req.body);
 
       if (result.error) {
@@ -176,38 +159,27 @@ app.post('/api/v1/products', (req, res) => {
           data: productItem,
         },
       );
-    } else {
-      return res.send(
-        {
-          success: false,
-          message: 'You don\'t have permission to be here',
-        }
-      );
     }
-  } else {
-    res.send(
-        {
-          success: false,
-          message: 'Please login as admin',
-        }
-      )
+    return res.send(
+      {
+        success: false,
+        message: 'You don\'t have permission to be here',
+      },
+    );
   }
-  
-});
-
-/*** ------------------ Sales API ------------------ */
-//################# GET Sales record ##########
-app.get('/api/v1/sales', (req, res) => {
   res.send(
     {
-      success: true,
-      message: 'Sales record was successfully retirieved',
-      data: sales,
+      success: false,
+      message: 'Please login as admin',
     },
   );
 });
 
-/*** ################# GET Sales Record by salesId ################ */
+/** * ------------------ Sales API ------------------ */
+// ################# GET Sales record ##########
+app.get('/api/v1/sales', Auth.verifyAdmin, Helper.sales);
+
+/** * ################# GET Sales Record by salesId ################ */
 app.get('/api/v1/sales/:saleId', (req, res) => {
   saleRecord = sales.find(sale => sale.saleId === parseInt(req.params.saleId, 10));
   if (!saleRecord) {
@@ -227,11 +199,11 @@ app.get('/api/v1/sales/:saleId', (req, res) => {
   );
 });
 
-/*** ################# POST Sales Record ################## */
+/** * ################# POST Sales Record ################## */
 app.post('/api/v1/sales', (req, res) => {
   const result = validateSale(req.body);
 
-  if(result.error) {
+  if (result.error) {
     return res.status(404).send({
       success: false,
       message: result.error.details[0].message,
