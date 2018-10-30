@@ -12,14 +12,6 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _passport = require('passport');
-
-var _passport2 = _interopRequireDefault(_passport);
-
-var _passportLocal = require('passport-local');
-
-var _passportLocal2 = _interopRequireDefault(_passportLocal);
-
 var _expressSession = require('express-session');
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
@@ -56,53 +48,6 @@ app.use(_express2.default.json());
 
 var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
 
-var products = [];
-var productItem = {};
-
-var sales = [];
-
-var saleRecord = {};
-
-var users = [{
-  id: 1,
-  email: 'admin@store.com',
-  password: 'computer',
-  previllege: 1
-}, {
-  id: 2,
-  email: 'attendant1@store.com',
-  password: 'computer',
-  previllege: 0
-}, {
-  id: 3,
-  email: 'attendant2@store.com',
-  password: 'computer',
-  previllege: 0
-}];
-
-_passport2.default.use(new _passportLocal2.default({
-  usernameField: 'email'
-}, function (email, password, done) {
-  // const user = users.find((user) => {
-  //  user.email === email;
-  // })
-
-  var user = users[0];
-
-  if (email === user.email && password === user.password) {
-    return done(null, user);
-  }
-}));
-
-_passport2.default.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-_passport2.default.deserializeUser(function (id, done) {
-  var user = users[0].id === id ? users[0] : false;
-  done(err, user);
-});
-
 app.use((0, _expressSession2.default)({
   genid: function genid(req) {
     return (0, _uuid2.default)();
@@ -112,9 +57,6 @@ app.use((0, _expressSession2.default)({
   resave: false,
   saveUninitialized: true
 }));
-
-app.use(_passport2.default.initialize());
-app.use(_passport2.default.session());
 
 app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
 

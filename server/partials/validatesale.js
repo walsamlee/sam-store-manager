@@ -1,5 +1,8 @@
 import Joi from 'joi';
-
+/**
+   * 
+   * @returns {} 
+*/
 const validateSale = (aSale) => {
   const schema = {
     attendantId: Joi.string().required(),

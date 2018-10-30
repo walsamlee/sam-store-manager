@@ -16,58 +16,6 @@ app.use(express.json());
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-const products = [];
-let productItem = {};
-
-const sales = [];
-
-let saleRecord = {};
-
-const users = [
-  {
-    id: 1,
-    email: 'admin@store.com',
-    password: 'computer',
-    previllege: 1,
-  },
-  {
-    id: 2,
-    email: 'attendant1@store.com',
-    password: 'computer',
-    previllege: 0,
-  },
-  {
-    id: 3,
-    email: 'attendant2@store.com',
-    password: 'computer',
-    previllege: 0,
-  },
-];
-
-passport.use(new strategy({
-  usernameField: 'email',
-},
-(email, password, done) => {
-  // const user = users.find((user) => {
-  //  user.email === email;
-  // })
-
-  const user = users[0];
-
-  if (email === user.email && password === user.password) {
-    return done(null, user);
-  }
-}));
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  const user = users[0].id === id ? users[0] : false;
-  done(err, user);
-});
-
 app.use(session({
   genid: req => uuid(),
   // store: new FileStore(),
@@ -75,9 +23,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '/../public')));
 

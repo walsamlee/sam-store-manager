@@ -1,5 +1,8 @@
 const sales = [];
-
+/**
+   * 
+   * @returns {} 
+*/
 const addSales = (data) => {
 	sales.push(data);
 }

@@ -6,6 +6,10 @@ var _joi2 = _interopRequireDefault(_joi);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+   * 
+   * @returns {} 
+*/
 var validateProduct = function validateProduct(prodItem) {
   var schema = {
     name: _joi2.default.string().required(),

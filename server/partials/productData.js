@@ -1,5 +1,8 @@
 const products = [];
-
+/**
+   * 
+   * @returns {} 
+*/
 const addItem = (data) => {
 	products.push(data);
 }
