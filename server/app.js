@@ -1,8 +1,6 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import passport from 'passport';
-import strategy from 'passport-local';
 import session from 'express-session';
 import uuid from 'uuid';
 import router from './routes/router';
@@ -95,140 +93,23 @@ app.post('/api/v1/login', (req, res, next) => {
 
 /** * -------------Product API-------------------- */
 /** * ############# GET Product ################# */
-app.get('/api/v1/products', (req, res) => {
-  res.send(
-    {
-      success: true,
-      message: 'products was successfully retrieved',
-      data: products,
-    },
-  );
-});
+app.get('/api/v1/products', Auth.loggedIn, Helper.inventory);
 
 /** * ############ GET Product by productId ################ */
-app.get('/api/v1/products/:productId', (req, res) => {
-  productItem = products.find(item => item.productId === parseInt(req.params.productId, 10));
-  if (!productItem) {
-    return res.status(404).send(
-      {
-        success: false,
-        message: `Product with ID ${req.params.productId} was not found`,
-      },
-    );
-  }
-  return res.send(
-    {
-      success: true,
-      message: `Product with ID ${req.params.productId} was found`,
-      data: productItem,
-    },
-  );
-});
+app.get('/api/v1/products/:productId', Auth.verifyAdmin, Helper.productId);
 
 /** * ####################### POST Product ######################## */
-app.post('/api/v1/products', (req, res) => {
-  if (req.isAuthenticated()) {
-    const authuser = req.user;
-    if (authuser.previllege === 1) {
-      /** * +++++++++++++++ Validate data +++++++++++++++++ */
-      const result = validateProduct(req.body);
-
-      if (result.error) {
-        return res.status(400).send({
-          success: false,
-          message: result.error.details[0].message,
-        });
-      }
-
-      productItem = {
-        productId: products.length + 1,
-        name: req.body.name,
-        category: req.body.category,
-        description: req.body.description,
-        amount: req.body.amount,
-        minAllowed: req.body.minAllowed,
-        price: req.body.price,
-      };
-
-      products.push(productItem);
-
-      return res.send(
-        {
-          success: true,
-          message: 'Product added to inventory successfully',
-          data: productItem,
-        },
-      );
-    }
-    return res.send(
-      {
-        success: false,
-        message: 'You don\'t have permission to be here',
-      },
-    );
-  }
-  res.send(
-    {
-      success: false,
-      message: 'Please login as admin',
-    },
-  );
-});
+app.post('/api/v1/products', Auth.verifyAdmin, Helper.addProduct);
 
 /** * ------------------ Sales API ------------------ */
 // ################# GET Sales record ##########
 app.get('/api/v1/sales', Auth.verifyAdmin, Helper.sales);
 
 /** * ################# GET Sales Record by salesId ################ */
-app.get('/api/v1/sales/:saleId', (req, res) => {
-  saleRecord = sales.find(sale => sale.saleId === parseInt(req.params.saleId, 10));
-  if (!saleRecord) {
-    return res.status(404).send(
-      {
-        success: false,
-        message: `Sales record with ID ${req.params.saleId} ID was not found`,
-      },
-    );
-  }
-  return res.send(
-    {
-      success: true,
-      message: `Sales record with ID ${req.params.saleId} was found`,
-      data: saleRecord,
-    },
-  );
-});
+app.get('/api/v1/sales/:saleId', Auth.verifyAdmin, Helper.salesId);
 
 /** * ################# POST Sales Record ################## */
-app.post('/api/v1/sales', (req, res) => {
-  const result = validateSale(req.body);
-
-  if (result.error) {
-    return res.status(404).send({
-      success: false,
-      message: result.error.details[0].message,
-    });
-  }
-
-  const thisSale = {
-    saleId: sales.length + 1,
-    attendantId: req.body.attendantId,
-    attendantName: req.body.attendantName,
-    products: req.body.products,
-    date: req.body.date,
-    price: req.body.price,
-  };
-
-  sales.push(thisSale);
-
-  return res.send(
-    {
-      success: true,
-      message: 'Sales has been recorded successfully',
-      data: thisSale,
-    },
-  );
-});
+app.post('/api/v1/sales', Auth.verifyAttendant, Helper.recordSales);
 
 const port = process.env.PORT || 3000;
 
