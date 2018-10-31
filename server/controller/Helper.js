@@ -137,12 +137,20 @@ const Helper = {
 		  );
 	},
 	deleteProduct(req, res) {
-
+		res.send({
+			success: true,
+			message: 'You are here in deleteProduct',
+			data: req.userData
+		});
 	},
 	editProduct(req, res) {
-
+		res.send({
+			success: true,
+			message: 'You are here in editProduct',
+			data: req.userData
+		});
 	},
-	logDemo(req, res) {
+	login(req, res) {
 		client.query('SELECT * FROM users', (err, result) => {
 			if(err) {
 				return res.send({
@@ -155,9 +163,8 @@ const Helper = {
 			message: 'Data successfully retrieved',
 			data: result.rows,
 			});		
-		});		
-	},
-	login(req, res) {
+		});	
+
 		const userData = users.showUser();
 
 		const aUser = userData.find(item => item.email === req.body.email);
@@ -189,7 +196,7 @@ const Helper = {
 			success: true,
 			message: 'You are here in signup',
 			data: req.userData
-		})
+		});
 	}
 }
 

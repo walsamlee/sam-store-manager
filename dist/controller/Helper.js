@@ -161,9 +161,21 @@ var Helper = {
 			data: productItem
 		});
 	},
-	deleteProduct: function deleteProduct(req, res) {},
-	editProduct: function editProduct(req, res) {},
-	logDemo: function logDemo(req, res) {
+	deleteProduct: function deleteProduct(req, res) {
+		res.send({
+			success: true,
+			message: 'You are here in deleteProduct',
+			data: req.userData
+		});
+	},
+	editProduct: function editProduct(req, res) {
+		res.send({
+			success: true,
+			message: 'You are here in editProduct',
+			data: req.userData
+		});
+	},
+	login: function login(req, res) {
 		_db2.default.query('SELECT * FROM users', function (err, result) {
 			if (err) {
 				return res.send({
@@ -177,8 +189,7 @@ var Helper = {
 				data: result.rows
 			});
 		});
-	},
-	login: function login(req, res) {
+
 		var userData = _users2.default.showUser();
 
 		var aUser = userData.find(function (item) {
