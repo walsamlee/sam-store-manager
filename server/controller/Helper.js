@@ -2,6 +2,7 @@ import validateProduct from '../partials/validateproduct';
 import validateSale from '../partials/validatesale';
 import sales from '../partials/salesData';
 import products from '../partials/productData';
+import client from '../models/db';
 
 const Helper = {
 	/* Add sales record */
@@ -133,6 +134,30 @@ const Helper = {
 		    },
 		  );
 	},
+	deleteProduct(req, res) {
+
+	},
+	editProduct(req, res) {
+
+	},
+	logDemo(req, res) {
+		client.query('SELECT * FROM users', (err, result) => {
+			if(err) {
+				return res.send({
+					success: false,
+					message: 'Data not retrieived',
+				});
+			}
+			res.status(200).send({
+			success: true,
+			message: 'Data successfully retrieved',
+			data: result.rows,
+			});		
+		});		
+	},
+	signup(req, res) {
+
+	}
 }
 
 export default Helper;

@@ -20,6 +20,10 @@ var _productData = require('../partials/productData');
 
 var _productData2 = _interopRequireDefault(_productData);
 
+var _db = require('../models/db');
+
+var _db2 = _interopRequireDefault(_db);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Helper = {
@@ -148,7 +152,25 @@ var Helper = {
 			message: 'Product with ID ' + req.params.productId + ' was found',
 			data: productItem
 		});
-	}
+	},
+	deleteProduct: function deleteProduct(req, res) {},
+	editProduct: function editProduct(req, res) {},
+	login: function login(req, res) {
+		_db2.default.query('SELECT * FROM users', function (err, result) {
+			if (err) {
+				return res.send({
+					success: false,
+					message: 'Data not retrieived'
+				});
+			}
+			res.status(200).send({
+				success: true,
+				message: 'Data successfully retrieved',
+				data: result.rows
+			});
+		});
+	},
+	signup: function signup(req, res) {}
 };
 
 exports.default = Helper;

@@ -32,29 +32,41 @@ app.use('/', router);
 
 /** * -------------User API-------------------- */
 /** * ############# POST User ################# */
-app.post('/api/v1/login', (req, res, next) => {
+app.get('/api/v1/auth/login', Helper.logDemo);
 
-});
-
-/** * -------------Product API-------------------- */
-/** * ############# GET Product ################# */
+/** * ############# Product API ################# */
+/** * ------------- GET Product -------------------- */
 app.get('/api/v1/products', Auth.loggedIn, Helper.inventory);
 
-/** * ############ GET Product by productId ################ */
+/** * ------------- GET Product by productId ------------- */
 app.get('/api/v1/products/:productId', Auth.verifyAdmin, Helper.productId);
 
-/** * ####################### POST Product ######################## */
+/** * ------------- POST Product ------------- */
 app.post('/api/v1/products', Auth.verifyAdmin, Helper.addProduct);
 
-/** * ------------------ Sales API ------------------ */
-// ################# GET Sales record ##########
+/** * ------------- PUT Product by productId ------------- */
+app.put('/api/v1/products/:productId', Auth.verifyAdmin, Helper.editProduct);
+
+/** * ------------- DELETE Product by productId ------------- */
+app.delete('/api/v1/products/:productId', Auth.verifyAdmin, Helper.deleteProduct);
+
+/** * ################# Sales API ################# */
+/** ------------- GET Sales record ------------- */
 app.get('/api/v1/sales', Auth.verifyAdmin, Helper.sales);
 
-/** * ################# GET Sales Record by salesId ################ */
+/** * ------------- GET Sales Record by salesId ------------- */
 app.get('/api/v1/sales/:saleId', Auth.verifyAdmin, Helper.salesId);
 
-/** * ################# POST Sales Record ################## */
+/** * ------------- POST Sales Record ------------- */
 app.post('/api/v1/sales', Auth.verifyAttendant, Helper.recordSales);
+
+/** * ################# Auth API for Sign In and Sign Up ################# */
+
+/** * ------------- POST logIn ------------- */
+app.post('api/v1/auth/login', Helper.login);
+
+/** * ------------- POST signup ------------- */
+app.post('api/v1/auth/signup', Auth.verifyAdmin, Helper.signup);
 
 const port = process.env.PORT || 3000;
 

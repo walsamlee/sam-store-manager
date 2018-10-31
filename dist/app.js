@@ -66,27 +66,41 @@ app.use('/', _router2.default);
 
 /** * -------------User API-------------------- */
 /** * ############# POST User ################# */
-app.post('/api/v1/login', function (req, res, next) {});
+app.get('/api/v1/auth/login', _Helper2.default.login);
 
-/** * -------------Product API-------------------- */
-/** * ############# GET Product ################# */
+/** * ############# Product API ################# */
+/** * ------------- GET Product -------------------- */
 app.get('/api/v1/products', _Auth2.default.loggedIn, _Helper2.default.inventory);
 
-/** * ############ GET Product by productId ################ */
+/** * ------------- GET Product by productId ------------- */
 app.get('/api/v1/products/:productId', _Auth2.default.verifyAdmin, _Helper2.default.productId);
 
-/** * ####################### POST Product ######################## */
+/** * ------------- POST Product ------------- */
 app.post('/api/v1/products', _Auth2.default.verifyAdmin, _Helper2.default.addProduct);
 
-/** * ------------------ Sales API ------------------ */
-// ################# GET Sales record ##########
+/** * ------------- PUT Product by productId ------------- */
+app.put('/api/v1/products/:productId', _Auth2.default.verifyAdmin, _Helper2.default.editProduct);
+
+/** * ------------- DELETE Product by productId ------------- */
+app.delete('/api/v1/products/:productId', _Auth2.default.verifyAdmin, _Helper2.default.deleteProduct);
+
+/** * ################# Sales API ################# */
+/** ------------- GET Sales record ------------- */
 app.get('/api/v1/sales', _Auth2.default.verifyAdmin, _Helper2.default.sales);
 
-/** * ################# GET Sales Record by salesId ################ */
+/** * ------------- GET Sales Record by salesId ------------- */
 app.get('/api/v1/sales/:saleId', _Auth2.default.verifyAdmin, _Helper2.default.salesId);
 
-/** * ################# POST Sales Record ################## */
+/** * ------------- POST Sales Record ------------- */
 app.post('/api/v1/sales', _Auth2.default.verifyAttendant, _Helper2.default.recordSales);
+
+/** * ################# Auth API for Sign In and Sign Up ################# */
+
+/** * ------------- POST logIn ------------- */
+app.post('api/v1/auth/login', _Helper2.default.login);
+
+/** * ------------- POST signup ------------- */
+app.post('api/v1/auth/signup', _Auth2.default.verifyAdmin, _Helper2.default.signup);
 
 var port = process.env.PORT || 3000;
 
