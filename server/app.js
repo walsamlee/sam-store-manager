@@ -8,6 +8,7 @@ import validateProduct from './partials/validateproduct';
 import validateSale from './partials/validatesale';
 import Auth from './middleware/Auth';
 import Helper from './controller/Helper';
+import jwt from 'jsonwebtoken';
 
 
 const app = express();
@@ -26,6 +27,8 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, '/../public')));
 
+// app.use(jwt({secret: process.env.SECRET}));
+
 app.use('/', router);
 
 /** * **************************** API Enpoints ********************************** */
@@ -36,19 +39,19 @@ app.get('/api/v1/auth/login', Helper.logDemo);
 
 /** * ############# Product API ################# */
 /** * ------------- GET Product -------------------- */
-app.get('/api/v1/products', Auth.loggedIn, Helper.inventory);
+app.get('/api/v1/products', Auth.verifyToken, Auth.verifyAdmin, Helper.inventory);
 
 /** * ------------- GET Product by productId ------------- */
 app.get('/api/v1/products/:productId', Auth.verifyAdmin, Helper.productId);
 
 /** * ------------- POST Product ------------- */
-app.post('/api/v1/products', Auth.verifyAdmin, Helper.addProduct);
+app.post('/api/v1/products', Auth.verifyToken, Auth.verifyAdmin, Helper.addProduct);
 
 /** * ------------- PUT Product by productId ------------- */
 app.put('/api/v1/products/:productId', Auth.verifyAdmin, Helper.editProduct);
 
 /** * ------------- DELETE Product by productId ------------- */
-app.delete('/api/v1/products/:productId', Auth.verifyAdmin, Helper.deleteProduct);
+app.delete('/api/v1/products/:productId', Auth.verifyToken, Auth.verifyAdmin, Helper.deleteProduct);
 
 /** * ################# Sales API ################# */
 /** ------------- GET Sales record ------------- */
@@ -63,10 +66,10 @@ app.post('/api/v1/sales', Auth.verifyAttendant, Helper.recordSales);
 /** * ################# Auth API for Sign In and Sign Up ################# */
 
 /** * ------------- POST logIn ------------- */
-app.post('api/v1/auth/login', Helper.login);
+app.post('/api/v1/auth/login', Helper.login);
 
 /** * ------------- POST signup ------------- */
-app.post('api/v1/auth/signup', Auth.verifyAdmin, Helper.signup);
+app.post('/api/v1/auth/signup', Auth.verifyToken, Helper.signup);
 
 const port = process.env.PORT || 3000;
 

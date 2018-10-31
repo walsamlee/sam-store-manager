@@ -2,7 +2,9 @@ import validateProduct from '../partials/validateproduct';
 import validateSale from '../partials/validatesale';
 import sales from '../partials/salesData';
 import products from '../partials/productData';
+import users from '../partials/users';
 import client from '../models/db';
+import jwt from 'jsonwebtoken';
 
 const Helper = {
 	/* Add sales record */
@@ -155,8 +157,39 @@ const Helper = {
 			});		
 		});		
 	},
-	signup(req, res) {
+	login(req, res) {
+		const userData = users.showUser();
 
+		const aUser = userData.find(item => item.email === req.body.email);
+
+		if (!aUser) {
+			return res.status(401).send({
+				success: false,
+				message: 'User not found'
+			})
+		}
+
+		const token = jwt.sign({
+			id: aUser.id,
+			previlledge: aUser.previllege
+		}, 
+		process.env.SECRET, 
+		{
+			expiresIn: '1d'
+		});
+
+		return res.status(200).send({
+			success: true,
+			message: 'Token encoded',
+			data: token
+		});
+	},
+	signup(req, res) {
+		res.send({
+			success: true,
+			message: 'You are here in signup',
+			data: req.userData
+		})
 	}
 }
 

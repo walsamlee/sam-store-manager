@@ -20,9 +20,17 @@ var _productData = require('../partials/productData');
 
 var _productData2 = _interopRequireDefault(_productData);
 
+var _users = require('../partials/users');
+
+var _users2 = _interopRequireDefault(_users);
+
 var _db = require('../models/db');
 
 var _db2 = _interopRequireDefault(_db);
+
+var _jsonwebtoken = require('jsonwebtoken');
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -155,7 +163,7 @@ var Helper = {
 	},
 	deleteProduct: function deleteProduct(req, res) {},
 	editProduct: function editProduct(req, res) {},
-	login: function login(req, res) {
+	logDemo: function logDemo(req, res) {
 		_db2.default.query('SELECT * FROM users', function (err, result) {
 			if (err) {
 				return res.send({
@@ -170,7 +178,40 @@ var Helper = {
 			});
 		});
 	},
-	signup: function signup(req, res) {}
+	login: function login(req, res) {
+		var userData = _users2.default.showUser();
+
+		var aUser = userData.find(function (item) {
+			return item.email === req.body.email;
+		});
+
+		if (!aUser) {
+			return res.status(401).send({
+				success: false,
+				message: 'User not found'
+			});
+		}
+
+		var token = _jsonwebtoken2.default.sign({
+			id: aUser.id,
+			previlledge: aUser.previllege
+		}, process.env.SECRET, {
+			expiresIn: '1d'
+		});
+
+		return res.status(200).send({
+			success: true,
+			message: 'Token encoded',
+			data: token
+		});
+	},
+	signup: function signup(req, res) {
+		res.send({
+			success: true,
+			message: 'You are here in signup',
+			data: req.userData
+		});
+	}
 };
 
 exports.default = Helper;

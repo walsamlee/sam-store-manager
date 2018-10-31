@@ -1,6 +1,9 @@
+
+import jwt from 'jsonwebtoken';
+
 const Auth = {
 	verifyAdmin(req, res, next) {
-		const token = req.headers['x-access-token'];
+		const token = req.userData.previlledge;
 		console.log(token);
 		if (token != 1) {
 			return res.status(401).send({
@@ -15,7 +18,7 @@ const Auth = {
 	},
 
 	verifyAttendant(req, res, next) {
-		const token = req.headers['x-access-token'];
+		const token = req.userData.previlledge;
 		if (token != 0) {
 			return res.status(401).send({
 				success: false,
@@ -27,19 +30,23 @@ const Auth = {
 
 		next()
 	},
+	verifyToken(req, res, next) {
+		try {
+			const token = req.headers.authorization.split(' ')[1];
+			console.log(token);
 
-	loggedIn(req, res, next) {
-		const token = req.headers['x-access-token'];
-		if ((token != 0) && (token != 1)) {
-			return res.status(401).send({
+			const decoded = jwt.verify(token, process.env.SECRET);
+
+			req.userData = decoded;
+
+			next();
+
+		} catch (error) {
+			res.status(401).send({
 				success: false,
-				message: 'Access to view products route denied',
-			});
+				message: 'Authentication failed'
+			})
 		}
-
-		res.status(200);
-
-		next();
 	}
 }
 
