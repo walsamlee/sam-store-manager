@@ -12,35 +12,28 @@ var _bcrypt = require('bcrypt');
 
 var _bcrypt2 = _interopRequireDefault(_bcrypt);
 
-var _validateproduct = require('../partials/validateproduct');
+var _joi = require('joi');
 
-var _validateproduct2 = _interopRequireDefault(_validateproduct);
-
-var _validatesale = require('../partials/validatesale');
-
-var _validatesale2 = _interopRequireDefault(_validatesale);
-
-var _salesData = require('../partials/salesData');
-
-var _salesData2 = _interopRequireDefault(_salesData);
-
-var _productData = require('../partials/productData');
-
-var _productData2 = _interopRequireDefault(_productData);
-
-var _users = require('../partials/users');
-
-var _users2 = _interopRequireDefault(_users);
+var _joi2 = _interopRequireDefault(_joi);
 
 var _db = require('../models/db');
 
 var _db2 = _interopRequireDefault(_db);
 
-var _validateUser = require('../partials/validateUser');
-
-var _validateUser2 = _interopRequireDefault(_validateUser);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* Data input validation */
+var validateUser = function validateUser(user) {
+	var schema = {
+		firstname: _joi2.default.string().required(),
+		lastname: _joi2.default.string().required(),
+		email: _joi2.default.string().email({ minDomainAtoms: 2 }).required(),
+		password: _joi2.default.string().required(),
+		previllege: _joi2.default.number().integer(1).required()
+	};
+
+	return _joi2.default.validate(user, schema);
+};
 
 var login = function login(req, res) {
 	var email = req.body.email;
@@ -80,7 +73,7 @@ var login = function login(req, res) {
 };
 
 var signup = function signup(req, res) {
-	var result = (0, _validateUser2.default)(req.body);
+	var result = validateUser(req.body);
 
 	if (result.error) {
 		return res.status(400).send({

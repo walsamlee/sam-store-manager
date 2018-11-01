@@ -20,13 +20,17 @@ var _Auth = require('./middleware/Auth');
 
 var _Auth2 = _interopRequireDefault(_Auth);
 
-var _Helper = require('./controller/Helper');
+var _Products = require('./controller/Products');
 
-var _Helper2 = _interopRequireDefault(_Helper);
+var _Products2 = _interopRequireDefault(_Products);
 
-var _jsonwebtoken = require('jsonwebtoken');
+var _Sales = require('./controller/Sales');
 
-var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+var _Sales2 = _interopRequireDefault(_Sales);
+
+var _Users = require('./controller/Users');
+
+var _Users2 = _interopRequireDefault(_Users);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40,17 +44,29 @@ app.use('/', _router2.default);
 
 /** * **************************** API Enpoints ********************************** */
 
+/** * --------------- POST Sales Record --------------- */
+app.post('/api/v1/sales', _Auth2.default.verifyToken, _Auth2.default.verifyAttendant, _Sales2.default.recordSales);
+
+/** * ------------- POST Product by ------------- */
+app.get('/api/v1/sales', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Sales2.default.getSales);
+
+/** * ------------- POST Product by ------------- */
+app.get('/api/v1/products', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.inventory);
+
+/** * ------------- POST Product by ------------- */
+app.post('/api/v1/products', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.addProduct);
+
 /** * ------------- PUT Product by productId ------------- */
-app.put('/api/v1/products/:productId', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Helper2.default.editProduct);
+app.put('/api/v1/products/:productId', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.editProduct);
 
 /** * ------------- DELETE Product by productId ------------- */
-app.delete('/api/v1/products/:productId', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Helper2.default.deleteProduct);
+app.delete('/api/v1/products/:productId', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.deleteProduct);
 
 /** * ------------- POST logIn ------------- */
-app.post('/api/v1/auth/login', _Helper2.default.login);
+app.post('/api/v1/auth/login', _Users2.default.login);
 
 /** * ------------- POST signup ------------- */
-app.post('/api/v1/auth/signup', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Helper2.default.signup);
+app.post('/api/v1/auth/signup', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Users2.default.signup);
 
 var port = process.env.PORT || 3000;
 

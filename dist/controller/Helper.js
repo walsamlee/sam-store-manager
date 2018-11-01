@@ -8,6 +8,10 @@ var _jsonwebtoken = require('jsonwebtoken');
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
+var _bcrypt = require('bcrypt');
+
+var _bcrypt2 = _interopRequireDefault(_bcrypt);
+
 var _validateproduct = require('../partials/validateproduct');
 
 var _validateproduct2 = _interopRequireDefault(_validateproduct);
@@ -45,7 +49,7 @@ var Helper = {
 		var result = (0, _validatesale2.default)(req.body);
 
 		if (result.error) {
-			return res.status(404).send({
+			return res.status(400).send({
 				success: false,
 				message: result.error.details[0].message
 			});
@@ -53,8 +57,8 @@ var Helper = {
 
 		var thisSale = {
 			saleId: saleId + 1,
-			attendantId: req.body.attendantId,
-			attendantName: req.body.attendantName,
+			attendantid: req.body.attendantid,
+			attendantname: req.body.attendantname,
 			products: req.body.products,
 			date: req.body.date,
 			price: req.body.price
@@ -102,9 +106,8 @@ var Helper = {
 		});
 	},
 
-	/* Add product to store */
+	/* Add a product to store */
 	addProduct: function addProduct(req, res) {
-		var productId = _productData2.default.showProducts.length;
 		var productItem = {};
 
 		var result = (0, _validateproduct2.default)(req.body);
@@ -116,67 +119,130 @@ var Helper = {
 			});
 		}
 
-		productItem = {
-			productId: productId + 1,
-			name: req.body.name,
-			category: req.body.category,
-			description: req.body.description,
-			amount: req.body.amount,
-			minAllowed: req.body.minAllowed,
-			price: req.body.price
+		var name = req.body.name,
+		    category = req.body.category,
+		    description = req.body.description,
+		    amount = req.body.amount,
+		    minallowed = req.body.minallowed,
+		    price = req.body.price;
+
+		var query = {
+			text: 'INSERT INTO inventory(name, category, description, amount, minallowed, price) VALUES($1, $2, $3, $4, $5, $6)',
+			values: [name, category, description, amount, minallowed, price]
 		};
-
-		_productData2.default.addItem(productItem);
-
-		return res.status(200).send({
-			success: true,
-			message: 'Product added to inventory successfully',
-			data: productItem
+		_db2.default.query(query, function (err, res) {
+			if (err) {
+				return console.log(err.stack);
+			} else {
+				console.log(res.rows[0]);
+			}
 		});
-	},
-
-	/* Get products from store */
-	inventory: function inventory(req, res) {
-		var inventory = _productData2.default.showProducts();
 
 		res.status(200).send({
 			success: true,
-			message: 'Data loaded successfully',
-			data: inventory
+			message: 'Product added to inventory successfully',
+			data: req.body
+		});
+	},
+
+	/* Get all products from store */
+	inventory: function inventory(req, res) {
+		_db2.default.query('SELECT * FROM inventory', function (err, result) {
+			if (err) {
+				return res.status(400).send({
+					success: false,
+					message: 'Data not retrieived'
+				});
+			}
+			return res.status(200).send({
+				success: true,
+				message: 'Products retrieived successfully',
+				data: result.rows
+			});
 		});
 	},
 
 	/* Get products from store by ID */
 	productId: function productId(req, res) {
-		var inventoryItems = _productData2.default.showProducts();
-		var productItem = inventoryItems.find(function (item) {
-			return item.productId === parseInt(req.params.productId, 10);
-		});
+		var productId = parseInt(req.params.productId, 10);
 
-		if (!productItem) {
-			return res.status(404).send({
+		var query = {
+			text: 'SELECT * FROM inventory WHERE id = $1',
+			values: [productId]
+		};
+
+		_db2.default.query(query, function (err, result) {
+			if (err) {
+				return res.status(400).send({
+					success: false,
+					message: 'Data not retrieived'
+				});
+			}
+			return res.status(200).send({
+				success: true,
+				message: 'Product with Product ID ' + productId + ' has been updated',
+				data: result.rows[0]
+			});
+		});
+	},
+
+	/* Delete product by ID */
+	deleteProduct: function deleteProduct(req, res) {
+		var productId = parseInt(req.params.productId, 10);
+
+		var query = {
+			text: 'DELETE FROM inventory WHERE id = $1',
+			values: [productId]
+		};
+
+		_db2.default.query(query, function (err, result) {
+			if (err) {
+				return res.status(404).send({
+					success: false,
+					message: 'User not found'
+				});
+			}
+			return res.status(200).send({
+				success: true,
+				message: 'Product with Product ID ' + productId + ' has been removed from inventory',
+				data: result.rows[0]
+			});
+		});
+	},
+
+	/* Edit product */
+	editProduct: function editProduct(req, res) {
+		var productid = parseInt(req.params.productId, 10);
+
+		var result = (0, _validateproduct2.default)(req.body);
+
+		if (result.error) {
+			return res.status(400).send({
 				success: false,
-				message: 'Product with ID ' + req.params.productId + ' was not found'
+				message: result.error.details[0].message
 			});
 		}
-		return res.send({
-			success: true,
-			message: 'Product with ID ' + req.params.productId + ' was found',
-			data: productItem
-		});
-	},
-	deleteProduct: function deleteProduct(req, res) {
-		res.send({
-			success: true,
-			message: 'You are here in deleteProduct',
-			data: req.userData
-		});
-	},
-	editProduct: function editProduct(req, res) {
-		res.send({
-			success: true,
-			message: 'You are here in editProduct',
-			data: req.userData
+
+		var name = req.body.name,
+		    category = req.body.category,
+		    description = req.body.description,
+		    amount = req.body.amount,
+		    minallowed = req.body.minallowed,
+		    price = req.body.price;
+
+		_db2.default.query('UPDATE inventory SET name = $2, category = $3, description = $4, amount = $5, minallowed = $6, price = $7 WHERE id = $1', [productid, name, category, description, amount, minallowed, price], function (err, result) {
+			if (err) {
+				return res.status(400).send({
+					success: false,
+					message: err.stack
+				});
+			}
+
+			return res.status(202).send({
+				success: true,
+				message: 'Product with Product ID ' + productid + ' has been updated',
+				data: req.body
+			});
 		});
 	},
 	login: function login(req, res) {
@@ -213,17 +279,7 @@ var Helper = {
 				message: 'Token encoded',
 				data: token
 			});
-
-			// res.status(200).send({
-			// success: true,
-			// message: 'Data successfully retrieved',
-			// data: result.rows,
-			// });
 		});
-
-		// const userData = users.showUser();
-
-		// const aUser = userData.find(item => item.email === req.body.email);
 	},
 	signup: function signup(req, res) {
 		var result = (0, _validateUser2.default)(req.body);
@@ -241,6 +297,9 @@ var Helper = {
 		    password = req.body.password,
 		    previllege = req.body.previllege;
 
+		_bcrypt2.default.hash(myPlaintextPassword, saltRounds, function (err, hash) {
+			// Store hash in your password DB.
+		});
 		var query = {
 			text: 'INSERT INTO users(email, password, previllege, firstname, lastname) VALUES($1, $2, $3, $4, $5)',
 			values: [email, password, previllege, firstname, lastname]

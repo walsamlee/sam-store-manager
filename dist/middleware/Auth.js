@@ -27,6 +27,7 @@ var Auth = {
 	},
 	verifyAttendant: function verifyAttendant(req, res, next) {
 		var token = req.userData.previlledge;
+		console.log(token);
 		if (token != 0) {
 			return res.status(401).send({
 				success: false,
@@ -41,7 +42,6 @@ var Auth = {
 	verifyToken: function verifyToken(req, res, next) {
 		try {
 			var token = req.headers.authorization.split(' ')[1];
-			console.log(token);
 
 			var decoded = _jsonwebtoken2.default.verify(token, process.env.SECRET);
 

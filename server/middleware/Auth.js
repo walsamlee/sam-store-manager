@@ -19,6 +19,7 @@ const Auth = {
 
 	verifyAttendant(req, res, next) {
 		const token = req.userData.previlledge;
+		console.log(token);
 		if (token != 0) {
 			return res.status(401).send({
 				success: false,
@@ -33,7 +34,6 @@ const Auth = {
 	verifyToken(req, res, next) {
 		try {
 			const token = req.headers.authorization.split(' ')[1];
-			console.log(token);
 
 			const decoded = jwt.verify(token, process.env.SECRET);
 
