@@ -152,45 +152,54 @@ const Helper = {
 		});
 	},
 	login(req, res) {
-		client.query('SELECT * FROM users', (err, result) => {
+		const email = req.body.email;
+		let aUser;
+		console.log(email);
+
+		const query = {
+						text: 'SELECT * FROM users WHERE email = $1',
+					    values: [email]
+					  };
+
+		client.query(query, (err, result) => {
 			if(err) {
 				return res.send({
 					success: false,
 					message: 'Data not retrieived',
 				});
 			}
-			res.status(200).send({
-			success: true,
-			message: 'Data successfully retrieved',
-			data: result.rows,
-			});		
+
+			aUser = result.rows[0];
+
+			console.log(aUser);
+
+			const token = jwt.sign({
+				id: aUser.id,
+				previlledge: aUser.previllege
+			}, 
+			process.env.SECRET, 
+			{
+				expiresIn: '1d'
+			});
+
+			return res.status(200).send({
+				success: true,
+				message: 'Token encoded',
+				data: token
+			});
+
+			// res.status(200).send({
+			// success: true,
+			// message: 'Data successfully retrieved',
+			// data: result.rows,
+			// });
 		});	
 
-		const userData = users.showUser();
 
-		const aUser = userData.find(item => item.email === req.body.email);
+		// const userData = users.showUser();
 
-		if (!aUser) {
-			return res.status(401).send({
-				success: false,
-				message: 'User not found'
-			})
-		}
+		// const aUser = userData.find(item => item.email === req.body.email);
 
-		const token = jwt.sign({
-			id: aUser.id,
-			previlledge: aUser.previllege
-		}, 
-		process.env.SECRET, 
-		{
-			expiresIn: '1d'
-		});
-
-		return res.status(200).send({
-			success: true,
-			message: 'Token encoded',
-			data: token
-		});
 	},
 	signup(req, res) {
 		const result = validateUser(req.body);

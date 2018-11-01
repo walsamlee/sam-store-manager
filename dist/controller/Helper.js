@@ -180,45 +180,50 @@ var Helper = {
 		});
 	},
 	login: function login(req, res) {
-		_db2.default.query('SELECT * FROM users', function (err, result) {
+		var email = req.body.email;
+		var aUser = void 0;
+		console.log(email);
+
+		var query = {
+			text: 'SELECT * FROM users WHERE email = $1',
+			values: [email]
+		};
+
+		_db2.default.query(query, function (err, result) {
 			if (err) {
 				return res.send({
 					success: false,
 					message: 'Data not retrieived'
 				});
 			}
-			res.status(200).send({
+
+			aUser = result.rows[0];
+
+			console.log(aUser);
+
+			var token = _jsonwebtoken2.default.sign({
+				id: aUser.id,
+				previlledge: aUser.previllege
+			}, process.env.SECRET, {
+				expiresIn: '1d'
+			});
+
+			return res.status(200).send({
 				success: true,
-				message: 'Data successfully retrieved',
-				data: result.rows
+				message: 'Token encoded',
+				data: token
 			});
+
+			// res.status(200).send({
+			// success: true,
+			// message: 'Data successfully retrieved',
+			// data: result.rows,
+			// });
 		});
 
-		var userData = _users2.default.showUser();
+		// const userData = users.showUser();
 
-		var aUser = userData.find(function (item) {
-			return item.email === req.body.email;
-		});
-
-		if (!aUser) {
-			return res.status(401).send({
-				success: false,
-				message: 'User not found'
-			});
-		}
-
-		var token = _jsonwebtoken2.default.sign({
-			id: aUser.id,
-			previlledge: aUser.previllege
-		}, process.env.SECRET, {
-			expiresIn: '1d'
-		});
-
-		return res.status(200).send({
-			success: true,
-			message: 'Token encoded',
-			data: token
-		});
+		// const aUser = userData.find(item => item.email === req.body.email);
 	},
 	signup: function signup(req, res) {
 		var result = (0, _validateUser2.default)(req.body);
