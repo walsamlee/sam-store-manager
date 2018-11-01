@@ -1,10 +1,11 @@
+import jwt from 'jsonwebtoken';
 import validateProduct from '../partials/validateproduct';
 import validateSale from '../partials/validatesale';
 import sales from '../partials/salesData';
 import products from '../partials/productData';
 import users from '../partials/users';
 import client from '../models/db';
-import jwt from 'jsonwebtoken';
+import validateUser from '../partials/validateUser';
 
 const Helper = {
 	/* Add sales record */
@@ -192,12 +193,41 @@ const Helper = {
 		});
 	},
 	signup(req, res) {
+		const result = validateUser(req.body);
+
+		if (result.error) {
+		    return res.status(400).send({
+		      success: false,
+		      message: result.error.details[0].message,
+		    });
+		  }
+		  const
+		      id = 1, 
+		  	  firstname = req.body.firstname,
+			  lastname = req.body.lastname,
+			  email = req.body.email,
+			  password = req.body.password,
+			  previllege = req.body.previllege;
+
+			  const query = {
+								text: 'INSERT INTO users(email, password, previllege, firstname, lastname) VALUES($1, $2, $3, $4, $5)',
+							  values: [email, password, previllege, firstname, lastname],
+							};
+
+			client.query(query, (err, res) => {
+			  	if (err) {
+			  		console.log(err.stack)
+			  	} else {
+			  		console.log(res.rows[0])
+			  	}
+
+			});
 		res.send({
 			success: true,
-			message: 'You are here in signup',
-			data: req.userData
-		});
-	}
+			message: 'User added successfully',
+			data: res.body
+		})
+	},
 }
 
 export default Helper;
