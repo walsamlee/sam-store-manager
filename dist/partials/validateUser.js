@@ -5,4 +5,4 @@
    * @returns {} 
 */
 
-module.exports = validateSale;
+module.exports = validateUser;

@@ -12,41 +12,25 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _passport = require('passport');
-
-var _passport2 = _interopRequireDefault(_passport);
-
-var _passportLocal = require('passport-local');
-
-var _passportLocal2 = _interopRequireDefault(_passportLocal);
-
-var _expressSession = require('express-session');
-
-var _expressSession2 = _interopRequireDefault(_expressSession);
-
-var _uuid = require('uuid');
-
-var _uuid2 = _interopRequireDefault(_uuid);
-
 var _router = require('./routes/router');
 
 var _router2 = _interopRequireDefault(_router);
-
-var _validateproduct = require('./partials/validateproduct');
-
-var _validateproduct2 = _interopRequireDefault(_validateproduct);
-
-var _validatesale = require('./partials/validatesale');
-
-var _validatesale2 = _interopRequireDefault(_validatesale);
 
 var _Auth = require('./middleware/Auth');
 
 var _Auth2 = _interopRequireDefault(_Auth);
 
-var _Helper = require('./controller/Helper');
+var _Products = require('./controller/Products');
 
-var _Helper2 = _interopRequireDefault(_Helper);
+var _Products2 = _interopRequireDefault(_Products);
+
+var _Sales = require('./controller/Sales');
+
+var _Sales2 = _interopRequireDefault(_Sales);
+
+var _Users = require('./controller/Users');
+
+var _Users2 = _interopRequireDefault(_Users);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56,95 +40,33 @@ app.use(_express2.default.json());
 
 var urlencodedParser = _bodyParser2.default.urlencoded({ extended: false });
 
-var products = [];
-var productItem = {};
-
-var sales = [];
-
-var saleRecord = {};
-
-var users = [{
-  id: 1,
-  email: 'admin@store.com',
-  password: 'computer',
-  previllege: 1
-}, {
-  id: 2,
-  email: 'attendant1@store.com',
-  password: 'computer',
-  previllege: 0
-}, {
-  id: 3,
-  email: 'attendant2@store.com',
-  password: 'computer',
-  previllege: 0
-}];
-
-_passport2.default.use(new _passportLocal2.default({
-  usernameField: 'email'
-}, function (email, password, done) {
-  // const user = users.find((user) => {
-  //  user.email === email;
-  // })
-
-  var user = users[0];
-
-  if (email === user.email && password === user.password) {
-    return done(null, user);
-  }
-}));
-
-_passport2.default.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-_passport2.default.deserializeUser(function (id, done) {
-  var user = users[0].id === id ? users[0] : false;
-  done(err, user);
-});
-
-app.use((0, _expressSession2.default)({
-  genid: function genid(req) {
-    return (0, _uuid2.default)();
-  },
-  // store: new FileStore(),
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
-}));
-
-app.use(_passport2.default.initialize());
-app.use(_passport2.default.session());
-
-app.use(_express2.default.static(_path2.default.join(__dirname, '/../public')));
-
 app.use('/', _router2.default);
 
 /** * **************************** API Enpoints ********************************** */
 
-/** * -------------User API-------------------- */
-/** * ############# POST User ################# */
-app.post('/api/v1/login', function (req, res, next) {});
+/** * --------------- POST Sales Record --------------- */
+app.post('/api/v1/sales', _Auth2.default.verifyToken, _Auth2.default.verifyAttendant, _Sales2.default.recordSales);
 
-/** * -------------Product API-------------------- */
-/** * ############# GET Product ################# */
-app.get('/api/v1/products', _Auth2.default.loggedIn, _Helper2.default.inventory);
+/** * ------------- POST Product by ------------- */
+app.get('/api/v1/sales', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Sales2.default.getSales);
 
-/** * ############ GET Product by productId ################ */
-app.get('/api/v1/products/:productId', _Auth2.default.verifyAdmin, _Helper2.default.productId);
+/** * ------------- POST Product by ------------- */
+app.get('/api/v1/products', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.inventory);
 
-/** * ####################### POST Product ######################## */
-app.post('/api/v1/products', _Auth2.default.verifyAdmin, _Helper2.default.addProduct);
+/** * ------------- POST Product by ------------- */
+app.post('/api/v1/products', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.addProduct);
 
-/** * ------------------ Sales API ------------------ */
-// ################# GET Sales record ##########
-app.get('/api/v1/sales', _Auth2.default.verifyAdmin, _Helper2.default.sales);
+/** * ------------- PUT Product by productId ------------- */
+app.put('/api/v1/products/:productId', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.editProduct);
 
-/** * ################# GET Sales Record by salesId ################ */
-app.get('/api/v1/sales/:saleId', _Auth2.default.verifyAdmin, _Helper2.default.salesId);
+/** * ------------- DELETE Product by productId ------------- */
+app.delete('/api/v1/products/:productId', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Products2.default.deleteProduct);
 
-/** * ################# POST Sales Record ################## */
-app.post('/api/v1/sales', _Auth2.default.verifyAttendant, _Helper2.default.recordSales);
+/** * ------------- POST logIn ------------- */
+app.post('/api/v1/auth/login', _Users2.default.login);
+
+/** * ------------- POST signup ------------- */
+app.post('/api/v1/auth/signup', _Auth2.default.verifyToken, _Auth2.default.verifyAdmin, _Users2.default.signup);
 
 var port = process.env.PORT || 3000;
 

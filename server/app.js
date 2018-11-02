@@ -1,14 +1,11 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import session from 'express-session';
-import uuid from 'uuid';
 import router from './routes/router';
-import validateProduct from './partials/validateproduct';
-import validateSale from './partials/validatesale';
 import Auth from './middleware/Auth';
-import Helper from './controller/Helper';
-
+import Products from './controller/Products';
+import Sales from './controller/Sales';
+import Users from './controller/Users';
 
 const app = express();
 
@@ -16,100 +13,33 @@ app.use(express.json());
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-const products = [];
-let productItem = {};
-
-const sales = [];
-
-let saleRecord = {};
-
-const users = [
-  {
-    id: 1,
-    email: 'admin@store.com',
-    password: 'computer',
-    previllege: 1,
-  },
-  {
-    id: 2,
-    email: 'attendant1@store.com',
-    password: 'computer',
-    previllege: 0,
-  },
-  {
-    id: 3,
-    email: 'attendant2@store.com',
-    password: 'computer',
-    previllege: 0,
-  },
-];
-
-passport.use(new strategy({
-  usernameField: 'email',
-},
-(email, password, done) => {
-  // const user = users.find((user) => {
-  //  user.email === email;
-  // })
-
-  const user = users[0];
-
-  if (email === user.email && password === user.password) {
-    return done(null, user);
-  }
-}));
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  const user = users[0].id === id ? users[0] : false;
-  done(err, user);
-});
-
-app.use(session({
-  genid: req => uuid(),
-  // store: new FileStore(),
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(express.static(path.join(__dirname, '/../public')));
-
 app.use('/', router);
 
 /** * **************************** API Enpoints ********************************** */
 
-/** * -------------User API-------------------- */
-/** * ############# POST User ################# */
-app.post('/api/v1/login', (req, res, next) => {
+/** * --------------- POST Sales Record --------------- */
+app.post('/api/v1/sales', Auth.verifyToken, Auth.verifyAttendant, Sales.recordSales);
 
-});
+/** * ------------- POST Product by ------------- */
+app.get('/api/v1/sales', Auth.verifyToken, Auth.verifyAdmin, Sales.getSales);
 
-/** * -------------Product API-------------------- */
-/** * ############# GET Product ################# */
-app.get('/api/v1/products', Auth.loggedIn, Helper.inventory);
+/** * ------------- POST Product by ------------- */
+app.get('/api/v1/products', Auth.verifyToken, Auth.verifyAdmin, Products.inventory);
 
-/** * ############ GET Product by productId ################ */
-app.get('/api/v1/products/:productId', Auth.verifyAdmin, Helper.productId);
+/** * ------------- POST Product by ------------- */
+app.post('/api/v1/products', Auth.verifyToken, Auth.verifyAdmin, Products.addProduct);
 
-/** * ####################### POST Product ######################## */
-app.post('/api/v1/products', Auth.verifyAdmin, Helper.addProduct);
+/** * ------------- PUT Product by productId ------------- */
+app.put('/api/v1/products/:productId', Auth.verifyToken, Auth.verifyAdmin, Products.editProduct);
 
-/** * ------------------ Sales API ------------------ */
-// ################# GET Sales record ##########
-app.get('/api/v1/sales', Auth.verifyAdmin, Helper.sales);
+/** * ------------- DELETE Product by productId ------------- */
+app.delete('/api/v1/products/:productId', Auth.verifyToken, Auth.verifyAdmin, Products.deleteProduct);
 
-/** * ################# GET Sales Record by salesId ################ */
-app.get('/api/v1/sales/:saleId', Auth.verifyAdmin, Helper.salesId);
+/** * ------------- POST logIn ------------- */
+app.post('/api/v1/auth/login', Users.login);
 
-/** * ################# POST Sales Record ################## */
-app.post('/api/v1/sales', Auth.verifyAttendant, Helper.recordSales);
+/** * ------------- POST signup ------------- */
+app.post('/api/v1/auth/signup', Auth.verifyToken, Auth.verifyAdmin, Users.signup);
 
 const port = process.env.PORT || 3000;
 
