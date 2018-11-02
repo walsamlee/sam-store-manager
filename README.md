@@ -1,8 +1,5 @@
 # sam-store-manager
 
-[![Build Status](https://travis-ci.org/walsamlee/sam-store-manager.svg?branch=ch-setup-travis-ci-161475643)](https://travis-ci.org/walsamlee/sam-store-manager)
-[![Coverage Status](https://coveralls.io/repos/github/walsamlee/sam-store-manager/badge.svg?branch=ch-integrate-coveralls-161492975)](https://coveralls.io/github/walsamlee/sam-store-manager?branch=ch-integrate-coveralls-161492975)
-
 Store Manager is a web application that helps store owners manage sales and product inventory records.
 
 ## Made with
