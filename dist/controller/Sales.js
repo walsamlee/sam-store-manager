@@ -17,8 +17,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* Data input validation */
 var validateSale = function validateSale(aSale) {
 	var schema = {
-		attendantId: _joi2.default.string().required(),
-		attendantName: _joi2.default.string().required(),
+		attendantid: _joi2.default.string().required(),
+		attendantname: _joi2.default.string().required(),
 		products: _joi2.default.string().required(),
 		date: _joi2.default.string().required(),
 		price: _joi2.default.number().integer().required()
@@ -28,6 +28,7 @@ var validateSale = function validateSale(aSale) {
 };
 /* Add sales record */
 var recordSales = function recordSales(req, res) {
+	console.log(req.body);
 	var result = validateSale(req.body);
 
 	if (result.error) {
@@ -49,14 +50,14 @@ var recordSales = function recordSales(req, res) {
 		values: [attendantid, attendantname, products, date, price]
 	};
 
-	_db2.default.query(query, function (err, res) {
+	_db2.default.query(query, function (err, result) {
 		if (err) {
 			return console.log(err.stack);
 		} else {
 			return res.send({
 				success: true,
 				message: 'Sales has been recorded successfully',
-				data: thisSale
+				data: result.rows[0]
 			});
 		}
 	});
@@ -80,23 +81,25 @@ var getSales = function getSales(req, res) {
 };
 /* Get sales record by ID */
 var getSaleId = function getSaleId(req, res) {
-	var salesData = sales.showSales();
+	var saleId = parseInt(req.params.saleId, 10);
 
-	var saleRecord = {};
+	var query = {
+		text: 'SELECT * FROM sales WHERE id = $1',
+		values: [saleId]
+	};
 
-	saleRecord = salesData.find(function (sale) {
-		return sale.saleId === parseInt(req.params.saleId, 10);
-	});
-	if (!saleRecord) {
-		return res.status(404).send({
-			success: false,
-			message: 'Sales record with ID ' + req.params.saleId + ' ID was not found'
+	_db2.default.query(query, function (err, result) {
+		if (err) {
+			return res.status(404).send({
+				success: false,
+				message: 'Sales record with ID ' + saleId + ' was found'
+			});
+		}
+		return res.status(200).send({
+			success: true,
+			message: 'Sales record with ID ' + saleId + ' was found',
+			data: result.rows[0]
 		});
-	}
-	return res.send({
-		success: true,
-		message: 'Sales record with ID ' + req.params.saleId + ' was found',
-		data: saleRecord
 	});
 };
 

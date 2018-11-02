@@ -4,8 +4,8 @@ import Joi from 'joi';
 /* Data input validation */
 const validateSale = (aSale) => {
   const schema = {
-    attendantId: Joi.string().required(),
-    attendantName: Joi.string().required(),
+    attendantid: Joi.string().required(),
+    attendantname: Joi.string().required(),
     products: Joi.string().required(),
     date: Joi.string().required(),
     price: Joi.number().integer().required(),
@@ -15,6 +15,7 @@ const validateSale = (aSale) => {
 };
 /* Add sales record */
 const recordSales = (req, res) => {
+	console.log(req.body);
   const result = validateSale(req.body);
 
   if (result.error) {
@@ -36,7 +37,7 @@ const recordSales = (req, res) => {
 	  values: [attendantid, attendantname, products, date, price],
 	};
 
-  client.query(query, (err, res) => {
+  client.query(query, (err, result) => {
   	if (err) {
   		 return console.log(err.stack)
   	} else {
@@ -44,7 +45,7 @@ const recordSales = (req, res) => {
 	    {
 	      success: true,
 	      message: 'Sales has been recorded successfully',
-	      data: thisSale,
+	      data: result.rows[0],
 	    },
 	  );
   	}
@@ -70,26 +71,26 @@ const getSales = (req, res) => {
 }
 /* Get sales record by ID */
 const getSaleId = (req, res) => {
-	const salesData = sales.showSales();
+	const saleId = parseInt(req.params.saleId, 10); 
 
-	let saleRecord = {};
+	const query = {
+		text: 'SELECT * FROM sales WHERE id = $1',
+	    values: [saleId]
+	};
 
-	saleRecord = salesData.find(sale => sale.saleId === parseInt(req.params.saleId, 10));
-	  if (!saleRecord) {
-	    return res.status(404).send(
-	      {
-	        success: false,
-	        message: `Sales record with ID ${req.params.saleId} ID was not found`,
-	      },
-	    );
-	  }
-	  return res.send(
-	    {
-	      success: true,
-	      message: `Sales record with ID ${req.params.saleId} was found`,
-	      data: saleRecord,
-	    },
-	  );
+	client.query(query, (err, result) => {
+		if(err) {
+			return res.status(404).send({
+				success: false,
+				message: `Sales record with ID ${saleId} was found`,
+			});
+		}
+		return res.status(200).send({
+			success: true,
+			message: `Sales record with ID ${saleId} was found`,
+			data: result.rows[0]
+		});
+	});
 };
 
 
