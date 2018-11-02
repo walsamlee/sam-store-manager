@@ -15,7 +15,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _dotenv2.default.config();
 
 var client = new _pg.Pool({
-	connectionString: process.env.DATABASE_URL
+	connectionString: process.env.REMOTE_DATABASE_URL
 });
 
 client.connect(function (err) {

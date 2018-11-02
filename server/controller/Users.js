@@ -1,14 +1,14 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt-nodejs';
 import Joi from 'joi';
 import client from '../models/db';
 
 /* Data input validation */
 const validateUser = (user) => {
   const schema = {
-    firstname: Joi.string().required(),
-    lastname: Joi.string().required(),
-    email: Joi.string().email({ minDomainAtoms: 2 }).required(),
+    firstname: Joi.string().trim().required(),
+    lastname: Joi.string().trim().required(),
+    email: Joi.string().trim().email({ minDomainAtoms: 2 }).required(),
     password: Joi.string().required(),
     previllege: Joi.number().integer(1).required()
   };
@@ -19,7 +19,6 @@ const validateUser = (user) => {
 const login = (req, res) => {
 	const email = req.body.email;
 	let aUser;
-	console.log(email);
 
 	const query = {
 					text: 'SELECT * FROM users WHERE email = $1',
@@ -36,7 +35,12 @@ const login = (req, res) => {
 
 		aUser = result.rows[0];
 
-		console.log(aUser);
+		if (!bcrypt.compareSync(req.body.password, aUser.password)) {
+			return res.status(400).send({
+				success: false,
+				message: 'Invalid username or password'
+			});
+		}
 
 		const token = jwt.sign({
 			id: aUser.id,
@@ -64,17 +68,19 @@ const signup = (req, res) => {
 	      message: result.error.details[0].message,
 	    });
 	  }
+	  let password;
+	  const saltRounds = 10;
 	  const
 	      id = 1, 
 	  	  firstname = req.body.firstname,
 		  lastname = req.body.lastname,
 		  email = req.body.email,
-		  password = req.body.password,
 		  previllege = req.body.previllege;
+		  
+		  password = bcrypt.hashSync(req.body.password);
 
-		  bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
-			  // Store hash in your password DB.
-		  });
+		  console.log(password, req.body.password);
+
 	  const query = {
 						text: 'INSERT INTO users(email, password, previllege, firstname, lastname) VALUES($1, $2, $3, $4, $5)',
 					  values: [email, password, previllege, firstname, lastname],
