@@ -82,7 +82,7 @@ const inventory = (req, res) => {
 
 /* Get products from store by ID */
 const getProduct = (req, res) => {
-	const productId = parseInt(req.params.productId, 10);
+	const productId = parseInt(req.params.productid, 10);
 
 	const query = {
 		text: 'SELECT * FROM inventory WHERE id = $1',
