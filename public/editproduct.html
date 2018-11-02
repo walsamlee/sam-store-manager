@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Store Manager - Edit Product</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<div class="main">
+		<div class="login-info">
+			<h2>Logged in as: Akinwale Samuel <a href="index.html" class="btn product-btn">Logout</a></h2>
+		</div>
+		<div class="dashboard">
+			<div class="dash-options">
+				<a href="admindash.html" class="btn dash-btn">Admin Dashboard</a>
+				<a href="dashboard.html" class="btn dash-btn">Dashboard</a>
+				<a href="addproduct.html" class="btn dash-btn">Add Product</a>
+				<a href="deleteproduct.html" class="btn dash-btn">Delete Product</a>
+				<a href="viewsales.html" class="btn dash-btn">View Sales</a>
+				<a href="addattendant.html" class="btn dash-btn">Add Attendant</a>
+				<a href="attendants.html" class="btn dash-btn">View Attendants</a>
+			</div>
+			<div class="product-available">
+				<form>
+
+				</form>
+				<form>
+					<table class="form-table">
+						<tr>
+							<td>
+								<label for="product">Select Product</label>
+							</td>
+							<td>
+								<select class="form-text" name="product">
+									<option class="form-text" value="options"></option>
+								    <option class="form-text" value="volvo">Product #1</option>
+								    <option class="form-text" value="saab">Product #2</option>
+								    <option class="form-text" value="fiat">Product #3</option>
+								    <option class="form-text" value="audi">Product #4</option>
+								    <option class="form-text" value="audi">Product #5</option>
+						  		</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="pruductId">ID: </label></td>
+							<td><input type="text" class="form-text" name="pruductId"></td>
+						</tr>
+						<tr>
+							<td><label for="productName">Name: </label></td>
+							<td><input type="text" class="form-text" name="productName"></td>
+						</tr>
+						<tr>
+							<td><label for="productDescription">Description: </label></td>
+							<td><input type="text" class="form-text" name="productDescription"></td>
+						</tr>
+						<tr>
+							<td><label for="pruductAmount">Amount: </label></td>
+							<td><input type="text" class="form-text" name="pruductAmount"></td>
+						</tr>
+						<tr>
+							<td><label for="pruducPrice">Price: </label></td>
+							<td><input type="text" class="form-text" name="pruducPrice"></td>
+						</tr>
+						<tr>
+							<td><label for="pruductCategory">Category: </label></td>
+							<td><input type="text" class="form-text" name="pruductCategory"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<input type="submit" class="btn product-btn" value="Edit">
+								<input type="reset" class="btn product-btn" value="Reset">
+								<button class="btn product-btn">Cancel</button>
+							</td>
+						</tr>
+					</table>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
