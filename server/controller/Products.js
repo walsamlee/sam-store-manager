@@ -82,11 +82,11 @@ const inventory = (req, res) => {
 
 /* Get products from store by ID */
 const getProduct = (req, res) => {
-	const productId = parseInt(req.params.productId, 10);
+	const productid = parseInt(req.params.productId, 10);
 
 	const query = {
 		text: 'SELECT * FROM inventory WHERE id = $1',
-	    values: [productId]
+	    values: [productid]
 	};
 
 	client.query(query, (err, result) => {
@@ -106,11 +106,11 @@ const getProduct = (req, res) => {
 
 /* Delete product by ID */
 const deleteProduct = (req, res) => {
-	const productId = parseInt(req.params.productId, 10);
+	const productid = parseInt(req.params.productId, 10);
 
 	const query = {
 		text: 'DELETE FROM inventory WHERE id = $1',
-	    values: [productId]
+	    values: [productid]
 	};
 
 	client.query(query, (err, result) => {
